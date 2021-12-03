@@ -155,6 +155,67 @@ export default {
         this.$router.push({ name: 'search' })
       }
     },
+    checkMetaMaskExtension() {
+      if (!window.ethereum) {
+        this.$message.error(
+          'Please install the MetaMask wallet plug-in and try again!'
+        )
+      }
+    },
+    async accountAuthorization() {
+      try {
+        await window.ethereum.request({
+          method: 'eth_requestAccounts',
+        })
+      } catch (err) {
+        console.log(err)
+        this.$message.error('Account authorization failed!')
+      }
+    },
+    addChain() {
+      let defaultChainJSON = JSON.parse(process.env.VUE_APP_DEFAULT_CHAIN)
+      window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: defaultChainJSON
+      }).then(() => {
+        this.watchToken()
+      }).catch((err) => {
+        console.log(err)
+        this.$message.error('Failed to add a default network to MetaMask!')
+      })
+    },
+    async watchToken() {
+      try {
+        let defaultTokenJSON = JSON.parse(process.env.VUE_APP_DEFAULT_TOKEN)
+        console.log(defaultTokenJSON)
+        await window.ethereum.request({
+          method: 'wallet_watchAsset',
+          params: defaultTokenJSON
+        })
+      } catch (err) {
+        console.log(err)
+        this.$message.error('Failed to add a default token to default network!')
+      }
+    },
+    switchChain() {
+      let defaultChainId = Web3.utils.numberToHex(process.env.VUE_APP_DEFAULT_CHAIN_ID)
+      window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: defaultChainId }]
+      }).then(() => {
+        this.watchToken()
+      }).catch((err) => {
+        console.log(err)
+        if (err.code === 4902) {
+          this.addChain()
+        }
+      })
+    },
+    async checkChain() {
+      this.checkMetaMaskExtension()
+      this.accountAuthorization()
+      this.switchChain()
+    }
   },
   created() {},
   mounted() {
@@ -168,6 +229,10 @@ export default {
         that.textText = account
         that.$emit('onneCli')
       })
+
+      if (this.filter.isFrame) {
+        this.checkChain()
+      }
     }
   },
 }
