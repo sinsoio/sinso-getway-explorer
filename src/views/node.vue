@@ -187,6 +187,9 @@ export default {
         this.withdrawInfo.amount
       )
       console.log('trxHash:' + trxHash)
+      if (trxHash != ""){
+        this.$message.success('Cashout successfully!！')
+      }
     },
     async connectCli() {
       if (!window.ethereum) {
