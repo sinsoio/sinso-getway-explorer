@@ -132,6 +132,8 @@ export default {
         this.$emit('onneCli')
       }
       this.logs()
+
+      this.checkChain()
     },
 
     seleChange(e) {
@@ -229,10 +231,6 @@ export default {
         that.textText = account
         that.$emit('onneCli')
       })
-
-      if (this.filter.isFrame) {
-        this.checkChain()
-      }
     }
   },
 }
