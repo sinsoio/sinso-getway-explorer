@@ -12,11 +12,6 @@ const routes = [
     isGo: true,
   },
   {
-    path: '/search',
-    name: 'search',
-    component: () => import('../views/search.vue'),
-  },
-  {
     path: '/node',
     name: 'node',
     component: () => import('../views/node.vue'),

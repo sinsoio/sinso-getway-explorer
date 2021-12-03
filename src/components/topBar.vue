@@ -41,27 +41,7 @@
         <div class="flex align-center">
           <div
             class="flex align-center justify-around pointer margin-right-xs souCont"
-          >
-            <!-- <p class="fontSize-14">Search by node address</p>
-            <img class="souImg" src="../assets/imgs/img-search.png" /> -->
-            <el-form class="inputRad">
-              <el-form-item label="">
-                <el-input
-                  v-model="contents"
-                  placeholder="Please enter a node"
-                  style="width: 380px"
-                >
-                  <el-button
-                    type="primary"
-                    slot="suffix"
-                    icon="el-icon-search"
-                    class="orig"
-                    @click.native="search"
-                  ></el-button>
-                </el-input>
-              </el-form-item>
-            </el-form>
-          </div>
+          ></div>
           <div v-if="!textText">
             <el-button round type="primary" @click="connectCli"
               >connect metamask</el-button
@@ -132,35 +112,91 @@ export default {
         this.$emit('onneCli')
       }
       this.logs()
+
+      this.checkChain()
     },
 
     seleChange(e) {
       if (e == 'logout') {
-        // window.ethereum.on('chainChanged', (res) => {
-        //   console.log(res)
-        // })
         this.textText = ''
         window.textText = ''
         this.$emit('clearCl')
       }
     },
-    search() {
-      if (!Web3.utils.isAddress(this.contents)) {
-        this.$message.error('Address format error')
-        return
+    checkMetaMaskExtension() {
+      if (!window.ethereum) {
+        this.$message.error(
+          'Please install the MetaMask wallet plug-in and try again!'
+        )
       }
-      window.contents = this.contents
-      this.$emit('searchs')
-      if (this.$route.name !== 'search') {
-        this.$router.push({ name: 'search' })
+    },
+    async accountAuthorization() {
+      try {
+        await window.ethereum.request({
+          method: 'eth_requestAccounts',
+        })
+      } catch (err) {
+        console.log(err)
+        this.$message.error('Account authorization failed!')
       }
+    },
+    addChain() {
+      let defaultChainJSON = JSON.parse(process.env.VUE_APP_DEFAULT_CHAIN)
+      window.ethereum
+        .request({
+          method: 'wallet_addEthereumChain',
+          params: defaultChainJSON,
+        })
+        .then(() => {
+          this.watchToken()
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message.error('Failed to add a default network to MetaMask!')
+        })
+    },
+    async watchToken() {
+      try {
+        let defaultTokenJSON = JSON.parse(process.env.VUE_APP_DEFAULT_TOKEN)
+        console.log(defaultTokenJSON)
+        await window.ethereum.request({
+          method: 'wallet_watchAsset',
+          params: defaultTokenJSON,
+        })
+      } catch (err) {
+        console.log(err)
+        this.$message.error('Failed to add a default token to default network!')
+      }
+    },
+    switchChain() {
+      let defaultChainId = Web3.utils.numberToHex(
+        process.env.VUE_APP_DEFAULT_CHAIN_ID
+      )
+      window.ethereum
+        .request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: defaultChainId }],
+        })
+        .then(() => {
+          this.watchToken()
+        })
+        .catch((err) => {
+          console.log(err)
+          if (err.code === 4902) {
+            this.addChain()
+          }
+        })
+    },
+    async checkChain() {
+      this.checkMetaMaskExtension()
+      this.accountAuthorization()
+      this.switchChain()
     },
   },
   created() {},
   mounted() {
     let that = this
     this.textText = window.textText
-    this.contents = window.contents
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', function (accounts) {
         let account = accounts[0]
