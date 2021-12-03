@@ -189,6 +189,7 @@ export default {
       console.log('trxHash:' + trxHash)
       if (trxHash != ""){
         this.$message.success('Cashout successfully!！')
+        this.isShow = false
       }
     },
     async connectCli() {
