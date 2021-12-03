@@ -202,7 +202,7 @@ export default {
       let minerInfo = await this.getMineInstance().methods.getMinerInfo(account).call()
       let miner = {
         address: account,
-        isOnline: minerInfo[0],
+        isOnline: minerInfo[1],
         deposits: this.numberHandle(minerInfo[2]),
         totalAwards: this.numberHandle(minerInfo[3]),
         withdrawnAwards: this.numberHandle(minerInfo[4]),
@@ -211,7 +211,7 @@ export default {
       }
       this.minerDetail = {
         address: account,
-        isOnline: minerInfo[0],
+        isOnline: minerInfo[1],
         deposits: minerInfo[2],
         totalAwards: minerInfo[3],
         withdrawnAwards: minerInfo[4],
