@@ -222,7 +222,7 @@ export default {
       this.list = [miner]
     },
     numberHandle(amount) {
-      return new BigNumber(amount).div(new BigNumber(10).pow(18)).toFixed(8)
+      return new BigNumber(amount).div(new BigNumber(10).pow(18)).toFixed(8,BigNumber.ROUND_DOWN)
     },
     async getAccount() {
       let accountList = await window.ethereum.request({
@@ -232,6 +232,7 @@ export default {
     },
     async withdraw(account, amount) {
       amount = new BigNumber(amount).times(new BigNumber(10).pow(18)).toString()
+      console.log(amount)
       let encodeAbi = this.getMineInstance()
         .methods.withdraw(amount)
         .encodeABI()
