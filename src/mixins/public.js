@@ -1,13 +1,11 @@
 export default {
   data() {
     return {
-      contents: '', //
       textText: '',
     }
   },
   computed: {},
   methods: {
-
     isSucc(funs) {
       window.ethereum
         .request({
