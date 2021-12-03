@@ -133,7 +133,6 @@ export default {
       }
     }
     return {
-      precision: 1000000000000000000,
       web3: '',
       mineInstance: '',
       list: [],
@@ -197,26 +196,24 @@ export default {
         return
       }
       let account = await this.getAccount()
-      let minerInfo = await this.getMineInstance()
-        .methods.getMinerInfo(account)
-        .call()
+      let minerInfo = await this.getMineInstance().methods.getMinerInfo(account).call()
       let miner = {
         address: account,
         isOnline: minerInfo[0],
-        deposits: this.numberHandle(minerInfo[1]),
-        totalAwards: this.numberHandle(minerInfo[2]),
-        withdrawnAwards: this.numberHandle(minerInfo[3]),
-        lockedAwards: this.numberHandle(minerInfo[4]),
-        cashableAwards: this.numberHandle(minerInfo[5]),
+        deposits: this.numberHandle(minerInfo[2]),
+        totalAwards: this.numberHandle(minerInfo[3]),
+        withdrawnAwards: this.numberHandle(minerInfo[4]),
+        lockedAwards: this.numberHandle(minerInfo[5]),
+        cashableAwards: this.numberHandle(minerInfo[6]),
       }
       this.minerDetail = {
         address: account,
         isOnline: minerInfo[0],
-        deposits: minerInfo[1],
-        totalAwards: minerInfo[2],
-        withdrawnAwards: minerInfo[3],
-        lockedAwards: minerInfo[4],
-        cashableAwards: minerInfo[5],
+        deposits: minerInfo[2],
+        totalAwards: minerInfo[3],
+        withdrawnAwards: minerInfo[4],
+        lockedAwards: minerInfo[5],
+        cashableAwards: minerInfo[6],
       }
       this.list = [miner]
     },
