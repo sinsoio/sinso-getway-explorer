@@ -76,7 +76,6 @@ export default {
     },
     async getPoolInfo() {
       let poolInfo = await this.getMineInstance().methods.getPoolInfo().call()
-      console.log(poolInfo)
       this.list1[0].uv = poolInfo[0]
       this.list1[1].uv = poolInfo[1]
       this.list1[2].uv = poolInfo[2]
