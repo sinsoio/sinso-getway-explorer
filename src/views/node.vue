@@ -196,7 +196,9 @@ export default {
         return
       }
       let account = await this.getAccount()
+      console.log('account: ',account)
       let minerInfo = await this.getMineInstance().methods.getMinerInfo(account).call()
+      console.log('minerInfo: ',minerInfo)
       let miner = {
         address: account,
         isOnline: minerInfo[0],
@@ -275,9 +277,7 @@ export default {
   },
 
   mounted() {
-    if (window.textText) {
-      this.connectCli()
-    }
+    // this.connectCli()
   },
 }
 </script>

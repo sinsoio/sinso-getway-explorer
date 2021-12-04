@@ -18,7 +18,7 @@
         <el-button
           type="text"
           class="fontsix"
-          :class="$route.name == 'index' ? 'ColoTexts' : 'texts'"
+          :class="$route.name === 'index' ? 'ColoTexts' : 'texts'"
           @click="goHome('index')"
           >Overview</el-button
         >
@@ -26,14 +26,14 @@
           type="text"
           class="fontsix"
           @click="goHome('node')"
-          :class="$route.name == 'node' ? 'ColoTexts' : 'texts'"
+          :class="$route.name === 'node' ? 'ColoTexts' : 'texts'"
           >Node</el-button
         >
         <el-button
           class="fontsix"
           type="text"
           @click="goHome('faucet')"
-          :class="$route.name == 'faucet' ? 'ColoTexts' : 'texts'"
+          :class="$route.name === 'faucet' ? 'ColoTexts' : 'texts'"
           >Faucet</el-button
         ><el-button class="texts fontsix" type="text" @click="goBacks"
           >Docs</el-button
@@ -62,45 +62,16 @@
               </el-form-item>
             </el-form>
           </div>
-          <div v-if="!textText">
-            <el-button round type="primary" @click="connectCli"
-              >Connect MetaMask</el-button
-            >
-          </div>
-          <el-select
-            class="radios"
-            v-model="valVal"
-            @change="seleChange"
-            v-else
-            style="width: 160px"
-          >
-            <el-option
-            v-for="item in ['Add Token']"
-            :key="item"
-            :label="item"
-            :value="item"
-            >
-            </el-option>
-            <el-option
-            v-for="item in ['Logout']"
-            :key="item"
-            :label="item"
-            :value="item"
-            >
-            </el-option>
-          </el-select>
+          <el-dropdown size="medium" split-button type="primary" @click="connectCli" @command="handleWallet">
+            {{valVal}}
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="addToken">Add Token</el-dropdown-item>
+              <el-dropdown-item command="logout" divided>Logout</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
       </div>
     </div>
-    <!-- tankuang -->
-    <!-- <el-dialog title="Tips" :visible.sync="isFrame" width="500px" center>
-      <div class="text-center fontBlod margin-tb-sm">
-        {{ textText }}
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="isFrame = false">confirm</el-button>
-      </span>
-    </el-dialog> -->
   </div>
 </template>
 
@@ -113,6 +84,7 @@ export default {
   data() {
     return {
       valVal: '',
+      contents: '',
       isFrame: false,
     }
   },
@@ -133,22 +105,22 @@ export default {
       }
     },
 
-    connectCli() {
-      let { name } = this.$route
-      if (name == 'node') {
-        this.$emit('onneCli')
+    async connectCli() {
+      let res = await this.checkChain()
+      if (res) {
+        let {name} = this.$route
+        if (name === 'node') {
+          this.$emit('onneCli')
+        }
       }
-      this.logs()
-
-      this.checkChain()
     },
 
-    seleChange(e) {
-      if (e == 'Add Token') {
+    handleWallet(command) {
+      if (command === 'addToken') {
         this.watchToken()
-      }else if (e == 'Logout') {
-        this.textText = ''
-        window.textText = ''
+      }else if (command === 'logout') {
+        this.valVal = 'Connect MetaMask'
+        this.$message.success('Disconnect MetaMask Success!')
         this.$emit('clearCl')
       }
     },
@@ -170,15 +142,19 @@ export default {
         )
       }
     },
-    async accountAuthorization() {
-      try {
-        await window.ethereum.request({
+    accountAuthorization() {
+      window.ethereum.request({
           method: 'eth_requestAccounts',
-        })
-      } catch (err) {
-        console.log(err)
-        this.$message.error('Account authorization failed!')
-      }
+      }).then((res) => {
+        this.valVal = res[0]
+      }).catch((err) => {
+        if (err.code === 4001) {
+          // EIP-1193 userRejectedRequest error
+          console.log('Please connect to MetaMask.');
+        } else {
+          this.$message.error('Account authorization failed!')
+        }
+      })
     },
     addChain() {
       let defaultChainJSON = JSON.parse(process.env.VUE_APP_DEFAULT_CHAIN)
@@ -186,6 +162,7 @@ export default {
         method: 'wallet_addEthereumChain',
         params: defaultChainJSON
       }).then(() => {
+        this.$message.success('Connect MetaMask Success!')
       }).catch((err) => {
         console.log(err)
         this.$message.error('Failed to add a default network to MetaMask!')
@@ -210,6 +187,7 @@ export default {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: defaultChainId }]
       }).then(() => {
+        this.$message.success('Connect MetaMask Success!')
       }).catch((err) => {
         console.log(err)
         if (err.code === 4902) {
@@ -221,19 +199,25 @@ export default {
       this.checkMetaMaskExtension()
       this.accountAuthorization()
       this.switchChain()
+
+      return true
     }
   },
-  created() {},
+  created() {
+    this.valVal = 'Connect MetaMask'
+  },
   mounted() {
     let that = this
-    this.textText = window.textText
     this.contents = window.contents
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', function (accounts) {
-        let account = accounts[0]
-        window.textText = account
-        that.textText = account
-        that.$emit('onneCli')
+        if (accounts.length === 0) {
+          this.valVal = 'Connect MetaMask'
+          that.$emit('clearCl')
+        } else {
+          that.valVal = accounts[0]
+          that.$emit('onneCli')
+        }
       })
     }
   },
