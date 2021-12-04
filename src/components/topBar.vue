@@ -44,7 +44,7 @@
           ></div>
           <div v-if="!textText">
             <el-button round type="primary" @click="connectCli"
-              >connect metamask</el-button
+              >Connect MetaMask</el-button
             >
           </div>
           <el-select
@@ -55,10 +55,17 @@
             style="width: 160px"
           >
             <el-option
-              v-for="item in ['logout']"
-              :key="item"
-              :label="item"
-              :value="item"
+            v-for="item in ['Add Token']"
+            :key="item"
+            :label="item"
+            :value="item"
+            >
+            </el-option>
+            <el-option
+            v-for="item in ['Logout']"
+            :key="item"
+            :label="item"
+            :value="item"
             >
             </el-option>
           </el-select>
@@ -117,7 +124,9 @@ export default {
     },
 
     seleChange(e) {
-      if (e == 'logout') {
+      if (e == 'Add Token') {
+        this.watchToken()
+      }else if (e == 'Logout') {
         this.textText = ''
         window.textText = ''
         this.$emit('clearCl')
@@ -142,18 +151,14 @@ export default {
     },
     addChain() {
       let defaultChainJSON = JSON.parse(process.env.VUE_APP_DEFAULT_CHAIN)
-      window.ethereum
-        .request({
-          method: 'wallet_addEthereumChain',
-          params: defaultChainJSON,
-        })
-        .then(() => {
-          this.watchToken()
-        })
-        .catch((err) => {
-          console.log(err)
-          this.$message.error('Failed to add a default network to MetaMask!')
-        })
+      window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: defaultChainJSON
+      }).then(() => {
+      }).catch((err) => {
+        console.log(err)
+        this.$message.error('Failed to add a default network to MetaMask!')
+      })
     },
     async watchToken() {
       try {
@@ -169,23 +174,17 @@ export default {
       }
     },
     switchChain() {
-      let defaultChainId = Web3.utils.numberToHex(
-        process.env.VUE_APP_DEFAULT_CHAIN_ID
-      )
-      window.ethereum
-        .request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: defaultChainId }],
-        })
-        .then(() => {
-          this.watchToken()
-        })
-        .catch((err) => {
-          console.log(err)
-          if (err.code === 4902) {
-            this.addChain()
-          }
-        })
+      let defaultChainId = Web3.utils.numberToHex(process.env.VUE_APP_DEFAULT_CHAIN_ID)
+      window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: defaultChainId }]
+      }).then(() => {
+      }).catch((err) => {
+        console.log(err)
+        if (err.code === 4902) {
+          this.addChain()
+        }
+      })
     },
     async checkChain() {
       this.checkMetaMaskExtension()
