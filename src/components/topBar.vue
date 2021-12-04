@@ -18,7 +18,7 @@
         <el-button
           type="text"
           class="fontsix"
-          :class="$route.name == 'index' ? 'ColoTexts' : 'texts'"
+          :class="$route.name === 'index' ? 'ColoTexts' : 'texts'"
           @click="goHome('index')"
           >Overview</el-button
         >
@@ -26,14 +26,14 @@
           type="text"
           class="fontsix"
           @click="goHome('node')"
-          :class="$route.name == 'node' ? 'ColoTexts' : 'texts'"
+          :class="$route.name === 'node' ? 'ColoTexts' : 'texts'"
           >Node</el-button
         >
         <el-button
           class="fontsix"
           type="text"
           @click="goHome('faucet')"
-          :class="$route.name == 'faucet' ? 'ColoTexts' : 'texts'"
+          :class="$route.name === 'faucet' ? 'ColoTexts' : 'texts'"
           >Faucet</el-button
         ><el-button class="texts fontsix" type="text" @click="goBacks"
           >Docs</el-button
@@ -41,46 +41,19 @@
         <div class="flex align-center">
           <div
             class="flex align-center justify-around pointer margin-right-xs souCont"
-          ></div>
-          <div v-if="!textText">
-            <el-button round type="primary" @click="connectCli"
-              >Connect MetaMask</el-button
-            >
-          </div>
-          <el-select
-            class="radios"
-            v-model="valVal"
-            @change="seleChange"
-            v-else
-            style="width: 160px"
           >
-            <el-option
-            v-for="item in ['Add Token']"
-            :key="item"
-            :label="item"
-            :value="item"
-            >
-            </el-option>
-            <el-option
-            v-for="item in ['Logout']"
-            :key="item"
-            :label="item"
-            :value="item"
-            >
-            </el-option>
-          </el-select>
+          </div>
+          <el-button type="primary" @click="connectCli" v-if="!textText">Connect MetaMask</el-button>
+          <el-dropdown v-if="textText" type="primary" split-button @command="handleWallet" @click="connectCli">
+            {{valVal}}
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="addToken">Add Token</el-dropdown-item>
+              <el-dropdown-item command="logout" divided>Logout</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
       </div>
     </div>
-    <!-- tankuang -->
-    <!-- <el-dialog title="Tips" :visible.sync="isFrame" width="500px" center>
-      <div class="text-center fontBlod margin-tb-sm">
-        {{ textText }}
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="isFrame = false">confirm</el-button>
-      </span>
-    </el-dialog> -->
   </div>
 </template>
 
@@ -113,40 +86,22 @@ export default {
       }
     },
 
-    connectCli() {
-      let { name } = this.$route
-      if (name == 'node') {
+    async connectCli() {
+      await this.checkChain()
+      let {name} = this.$route
+      if (name === 'node') {
         this.$emit('onneCli')
       }
-      this.logs()
-
-      this.checkChain()
     },
 
-    seleChange(e) {
-      if (e == 'Add Token') {
+    handleWallet(command) {
+      if (command === 'addToken') {
         this.watchToken()
-      }else if (e == 'Logout') {
+      }else if (command === 'logout') {
         this.textText = ''
         window.textText = ''
+        this.$message.success('Disconnect MetaMask Success!')
         this.$emit('clearCl')
-      }
-    },
-    checkMetaMaskExtension() {
-      if (!window.ethereum) {
-        this.$message.error(
-          'Please install the MetaMask wallet plug-in and try again!'
-        )
-      }
-    },
-    async accountAuthorization() {
-      try {
-        await window.ethereum.request({
-          method: 'eth_requestAccounts',
-        })
-      } catch (err) {
-        console.log(err)
-        this.$message.error('Account authorization failed!')
       }
     },
     addChain() {
@@ -155,6 +110,7 @@ export default {
         method: 'wallet_addEthereumChain',
         params: defaultChainJSON
       }).then(() => {
+        this.$message.success('Connect MetaMask Success!')
       }).catch((err) => {
         console.log(err)
         this.$message.error('Failed to add a default network to MetaMask!')
@@ -166,7 +122,7 @@ export default {
         console.log(defaultTokenJSON)
         await window.ethereum.request({
           method: 'wallet_watchAsset',
-          params: defaultTokenJSON,
+          params: defaultTokenJSON
         })
       } catch (err) {
         console.log(err)
@@ -179,6 +135,7 @@ export default {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: defaultChainId }]
       }).then(() => {
+        this.$message.success('Connect MetaMask Success!')
       }).catch((err) => {
         console.log(err)
         if (err.code === 4902) {
@@ -190,7 +147,7 @@ export default {
       this.checkMetaMaskExtension()
       this.accountAuthorization()
       this.switchChain()
-    },
+    }
   },
   created() {},
   mounted() {
