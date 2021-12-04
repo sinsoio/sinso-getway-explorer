@@ -43,7 +43,8 @@
             class="flex align-center justify-around pointer margin-right-xs souCont"
           >
           </div>
-          <el-dropdown size="medium" split-button type="primary" @click="connectCli" @command="handleWallet">
+          <el-button type="primary" @click="connectCli" v-if="!textText">Connect MetaMask</el-button>
+          <el-dropdown v-if="textText" type="primary" split-button @command="handleWallet" @click="connectCli">
             {{valVal}}
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="addToken">Add Token</el-dropdown-item>
@@ -65,11 +66,18 @@ export default {
   data() {
     return {
       valVal: '',
-      contents: '',
       isFrame: false,
     }
   },
-  watch: {},
+  watch: {
+    textText(val) {
+      if (val) {
+        this.valVal = val.slice(0, 5) + '......' + val.slice(37, 43)
+      } else {
+        this.valVal = ''
+      }
+    },
+  },
   computed: {},
   methods: {
     goHome(item) {
@@ -90,31 +98,11 @@ export default {
       if (command === 'addToken') {
         this.watchToken()
       }else if (command === 'logout') {
-        this.valVal = 'Connect MetaMask'
+        this.textText = ''
+        window.textText = ''
         this.$message.success('Disconnect MetaMask Success!')
         this.$emit('clearCl')
       }
-    },
-    checkMetaMaskExtension() {
-      if (!window.ethereum) {
-        this.$message.error(
-          'Please install the MetaMask wallet plug-in and try again!'
-        )
-      }
-    },
-    accountAuthorization() {
-      window.ethereum.request({
-          method: 'eth_requestAccounts',
-      }).then((accounts) => {
-        this.valVal = accounts[0].slice(0, 5) + '......' + accounts[0].slice(37, 43)
-      }).catch((err) => {
-        if (err.code === 4001) {
-          // EIP-1193 userRejectedRequest error
-          console.log('Please connect to MetaMask.');
-        } else {
-          this.$message.error('Account authorization failed!')
-        }
-      })
     },
     addChain() {
       let defaultChainJSON = JSON.parse(process.env.VUE_APP_DEFAULT_CHAIN)
@@ -161,22 +149,16 @@ export default {
       this.switchChain()
     }
   },
-  created() {
-    this.valVal = 'Connect MetaMask'
-  },
+  created() {},
   mounted() {
     let that = this
     this.textText = window.textText
-    this.contents = window.contents
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', function (accounts) {
-        if (accounts.length === 0) {
-          that.valVal = 'Connect MetaMask'
-          that.$emit('clearCl')
-        } else {
-          that.valVal = accounts[0].slice(0, 5) + '......' + accounts[0].slice(37, 43)
-          that.$emit('onneCli')
-        }
+        let account = accounts[0]
+        window.textText = account
+        that.textText = account
+        that.$emit('onneCli')
       })
     }
   },
