@@ -42,25 +42,6 @@
           <div
             class="flex align-center justify-around pointer margin-right-xs souCont"
           >
-            <!-- <p class="fontSize-14">Search by node address</p>
-            <img class="souImg" src="../assets/imgs/img-search.png" /> -->
-            <el-form class="inputRad">
-              <el-form-item label="">
-                <el-input
-                  v-model="contents"
-                  placeholder="Please enter a node"
-                  style="width: 380px"
-                >
-                  <el-button
-                    type="primary"
-                    slot="suffix"
-                    icon="el-icon-search"
-                    class="orig"
-                    @click.native="search"
-                  ></el-button>
-                </el-input>
-              </el-form-item>
-            </el-form>
           </div>
           <el-dropdown size="medium" split-button type="primary" @click="connectCli" @command="handleWallet">
             {{valVal}}
@@ -72,15 +53,6 @@
         </div>
       </div>
     </div>
-    <!-- tankuang -->
-    <!-- <el-dialog title="Tips" :visible.sync="isFrame" width="500px" center>
-      <div class="text-center fontBlod margin-tb-sm">
-        {{ textText }}
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="isFrame = false">confirm</el-button>
-      </span>
-    </el-dialog> -->
   </div>
 </template>
 
@@ -97,15 +69,7 @@ export default {
       isFrame: false,
     }
   },
-  watch: {
-    textText(val) {
-      if (val) {
-        this.valVal = val.slice(0, 5) + '......' + val.slice(37, 43)
-      } else {
-        this.valVal = ''
-      }
-    },
-  },
+  watch: {},
   computed: {},
   methods: {
     goHome(item) {
@@ -115,12 +79,10 @@ export default {
     },
 
     async connectCli() {
-      let res = await this.checkChain()
-      if (res) {
-        let {name} = this.$route
-        if (name === 'node') {
-          this.$emit('onneCli')
-        }
+      await this.checkChain()
+      let {name} = this.$route
+      if (name === 'node') {
+        this.$emit('onneCli')
       }
     },
 
@@ -143,8 +105,8 @@ export default {
     accountAuthorization() {
       window.ethereum.request({
           method: 'eth_requestAccounts',
-      }).then((res) => {
-        this.valVal = res[0]
+      }).then((accounts) => {
+        this.valVal = accounts[0].slice(0, 5) + '......' + accounts[0].slice(37, 43)
       }).catch((err) => {
         if (err.code === 4001) {
           // EIP-1193 userRejectedRequest error
@@ -209,10 +171,10 @@ export default {
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', function (accounts) {
         if (accounts.length === 0) {
-          this.valVal = 'Connect MetaMask'
+          that.valVal = 'Connect MetaMask'
           that.$emit('clearCl')
         } else {
-          that.valVal = accounts[0]
+          that.valVal = accounts[0].slice(0, 5) + '......' + accounts[0].slice(37, 43)
           that.$emit('onneCli')
         }
       })
