@@ -41,27 +41,7 @@
         <div class="flex align-center">
           <div
             class="flex align-center justify-around pointer margin-right-xs souCont"
-          >
-            <!-- <p class="fontSize-14">Search by node address</p>
-            <img class="souImg" src="../assets/imgs/img-search.png" /> -->
-            <el-form class="inputRad">
-              <el-form-item label="">
-                <el-input
-                  v-model="contents"
-                  placeholder="Please enter a node"
-                  style="width: 380px"
-                >
-                  <el-button
-                    type="primary"
-                    slot="suffix"
-                    icon="el-icon-search"
-                    class="orig"
-                    @click.native="search"
-                  ></el-button>
-                </el-input>
-              </el-form-item>
-            </el-form>
-          </div>
+          ></div>
           <div v-if="!textText">
             <el-button round type="primary" @click="connectCli"
               >Connect MetaMask</el-button
@@ -152,17 +132,6 @@ export default {
         this.$emit('clearCl')
       }
     },
-    search() {
-      if (!Web3.utils.isAddress(this.contents)) {
-        this.$message.error('Address format error')
-        return
-      }
-      window.contents = this.contents
-      this.$emit('searchs')
-      if (this.$route.name !== 'search') {
-        this.$router.push({ name: 'search' })
-      }
-    },
     checkMetaMaskExtension() {
       if (!window.ethereum) {
         this.$message.error(
@@ -197,7 +166,7 @@ export default {
         console.log(defaultTokenJSON)
         await window.ethereum.request({
           method: 'wallet_watchAsset',
-          params: defaultTokenJSON
+          params: defaultTokenJSON,
         })
       } catch (err) {
         console.log(err)
@@ -221,13 +190,12 @@ export default {
       this.checkMetaMaskExtension()
       this.accountAuthorization()
       this.switchChain()
-    }
+    },
   },
   created() {},
   mounted() {
     let that = this
     this.textText = window.textText
-    this.contents = window.contents
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', function (accounts) {
         let account = accounts[0]

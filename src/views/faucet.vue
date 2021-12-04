@@ -89,8 +89,11 @@ export default {
         )
         return
       }
-      let txHash = await this.airdrop(account)
-      console.log('txHash==>' + txHash)
+      let trxHash = await this.airdrop(account)
+      console.log('trxHash==>' + trxHash)
+      if (trxHash != ""){
+        this.$message.success('Received successfully!！')
+      }
     },
     async inWhiteList(address) {
       let res = await this.getMineInstance()
