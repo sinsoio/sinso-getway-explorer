@@ -22,8 +22,8 @@
         ></el-table-column>
         <el-table-column prop="isOnline" label="State" align="center">
           <template slot-scope="scope">
-            <el-tag type="success" v-if="scope.row.isOnline">working</el-tag>
-            <el-tag type="warning" v-else>unwork</el-tag>
+            <el-tag type="success" v-if="scope.row.isOnline">Working</el-tag>
+            <el-tag type="danger" v-else>Unwork</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="deposits" align="center">
@@ -51,7 +51,7 @@
         ></el-table-column>
         <el-table-column
           prop="lockedAwards"
-          label="Lock-up rewards"
+          label="Lock up rewards"
           align="center"
         ></el-table-column>
         <el-table-column
@@ -66,14 +66,14 @@
               type="primary"
               @click="showCli(scope.row)"
               size="small"
-              >cashout</el-button
+              >Cashout</el-button
             >
           </template>
         </el-table-column>
       </el-table>
     </div>
     <!-- tankuang -->
-    <el-dialog :visible.sync="isShow" width="600px" center title="cashout">
+    <el-dialog :visible.sync="isShow" width="600px" center title="Cashout">
       <div class="flex align-center substance">
         <p>From:</p>
         <div>{{ withdrawInfo.fromAddress }}</div>
@@ -84,14 +84,13 @@
       </div>
       <el-form ref="addForm" :model="withdrawInfo" :rules="formRules">
         <el-form-item label="Amount:" label-width="140px" prop="amount">
-          <!--  @keyup.enter.native="doSearch" -->
           <el-input
             oninput="value = value.replace(/[^\d.]/g, '')"
             v-model="withdrawInfo.amount"
             placeholder="please"
             style="width: 300px"
           >
-            <a @click="allCli" slot="suffix" class="colos pointer">All</a>
+            <a @click="allCli" slot="suffix" class="colos pointer all">All</a>
           </el-input>
         </el-form-item>
       </el-form>
@@ -104,8 +103,8 @@
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="isShow = false">cancel</el-button>
-        <el-button type="primary" @click="againProcess">determine</el-button>
+        <el-button @click="isShow = false">Cancel</el-button>
+        <el-button type="primary" @click="confirm">Confirm</el-button>
       </span>
     </el-dialog>
   </div>
@@ -173,20 +172,26 @@ export default {
         cashableAwards: this.minerDetail.cashableAwards,
       }
     },
-    againProcess() {
-      console.log(this.withdrawInfo)
+    async confirm() {
       this.$refs.addForm.validate((valid) => {
         if (valid) {
-          this.saveQue()
+          this.handleWithdraw()
         }
       })
     },
-    async saveQue() {
+    async handleWithdraw() {
       let trxHash = await this.withdraw(
         this.withdrawInfo.fromAddress,
         this.withdrawInfo.amount
       )
-      console.log('trxHash:' + trxHash)
+      if (trxHash != ""){
+        this.$message.success('Cashout successfully!！')
+        let that=this
+        setTimeout(function(){
+          that.updateMinerInfo(that.withdrawInfo.fromAddress)
+          that.isShow = false
+        },5000)
+      }
     },
     async connectCli() {
       if (!window.ethereum) {
@@ -196,12 +201,13 @@ export default {
         return
       }
       let account = await this.getAccount()
-      console.log('account: ',account)
+      this.updateMinerInfo(account)
+    },
+    async updateMinerInfo(account){
       let minerInfo = await this.getMineInstance().methods.getMinerInfo(account).call()
-      console.log('minerInfo: ',minerInfo)
       let miner = {
         address: account,
-        isOnline: minerInfo[0],
+        isOnline: minerInfo[1],
         deposits: this.numberHandle(minerInfo[2]),
         totalAwards: this.numberHandle(minerInfo[3]),
         withdrawnAwards: this.numberHandle(minerInfo[4]),
@@ -210,7 +216,7 @@ export default {
       }
       this.minerDetail = {
         address: account,
-        isOnline: minerInfo[0],
+        isOnline: minerInfo[1],
         deposits: minerInfo[2],
         totalAwards: minerInfo[3],
         withdrawnAwards: minerInfo[4],
@@ -220,7 +226,7 @@ export default {
       this.list = [miner]
     },
     numberHandle(amount) {
-      return new BigNumber(amount).div(new BigNumber(10).pow(18)).toFixed(8)
+      return new BigNumber(amount).div(new BigNumber(10).pow(18)).toFixed(8,BigNumber.ROUND_DOWN)
     },
     async getAccount() {
       let accountList = await window.ethereum.request({
@@ -259,9 +265,6 @@ export default {
       this.minerDetail = {}
     },
     allCli() {
-      // this.withdrawInfo.amount = this.withdrawInfo.viewCashableAwards
-      // // console.log(this.withdrawInfo.amount)
-
       this.$set(
         this.withdrawInfo,
         'amount',
@@ -277,7 +280,9 @@ export default {
   },
 
   mounted() {
-    // this.connectCli()
+    if (window.textText) {
+      this.connectCli()
+    }
   },
 }
 </script>
@@ -305,5 +310,21 @@ export default {
 }
 .colos {
   color: #00abeb;
+}
+.all{
+  margin-right: 8px;
+}
+::v-deep .el-dialog{
+  border-radius:10px;
+}
+::v-deep .dialog-footer .el-button {
+  width: 100px;
+  border-radius: 6px;
+}
+::v-deep .dialog-footer .el-button:first-child {
+  margin-right: 20px;
+}
+::v-deep .dialog-footer .el-button:last-child {
+  margin-left: 20px;
 }
 </style>

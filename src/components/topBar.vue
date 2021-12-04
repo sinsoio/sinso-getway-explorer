@@ -72,6 +72,15 @@
         </div>
       </div>
     </div>
+    <!-- tankuang -->
+    <!-- <el-dialog title="Tips" :visible.sync="isFrame" width="500px" center>
+      <div class="text-center fontBlod margin-tb-sm">
+        {{ textText }}
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="isFrame = false">confirm</el-button>
+      </span>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -122,17 +131,6 @@ export default {
         this.valVal = 'Connect MetaMask'
         this.$message.success('Disconnect MetaMask Success!')
         this.$emit('clearCl')
-      }
-    },
-    search() {
-      if (!Web3.utils.isAddress(this.contents)) {
-        this.$message.error('Address format error')
-        return
-      }
-      window.contents = this.contents
-      this.$emit('searchs')
-      if (this.$route.name !== 'search') {
-        this.$router.push({ name: 'search' })
       }
     },
     checkMetaMaskExtension() {
@@ -199,8 +197,6 @@ export default {
       this.checkMetaMaskExtension()
       this.accountAuthorization()
       this.switchChain()
-
-      return true
     }
   },
   created() {
@@ -208,6 +204,7 @@ export default {
   },
   mounted() {
     let that = this
+    this.textText = window.textText
     this.contents = window.contents
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', function (accounts) {
