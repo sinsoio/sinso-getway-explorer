@@ -1,0 +1,26 @@
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+}
+.widthCont {
+  max-width: 1400px;
+}
+.coloCCC {
+  color: #71757f;
+}
+.backCCC {
+  background-color: #f3f5f8;
+}
+.colo999 {
+  color: #999999;
+}
+
+.el-input-group__append {
+  border: transparent;
+}
+.el-input-group__append button.orig {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+}
