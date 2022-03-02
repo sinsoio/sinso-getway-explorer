@@ -162,6 +162,11 @@ export default {
     }
   },
   computed: {},
+  watch: {
+    '$store.state.odd2'(val) {
+      console.log('触发了odd2值为' + val)
+    },
+  },
   methods: {
     showCli() {
       this.isShow = true
@@ -184,13 +189,13 @@ export default {
         this.withdrawInfo.fromAddress,
         this.withdrawInfo.amount
       )
-      if (trxHash != ""){
+      if (trxHash != '') {
         this.$message.success('Cashout successfully!！')
-        let that=this
-        setTimeout(function(){
+        let that = this
+        setTimeout(function () {
           that.updateMinerInfo(that.withdrawInfo.fromAddress)
           that.isShow = false
-        },5000)
+        }, 5000)
       }
     },
     async connectCli() {
@@ -203,8 +208,10 @@ export default {
       let account = await this.getAccount()
       this.updateMinerInfo(account)
     },
-    async updateMinerInfo(account){
-      let minerInfo = await this.getMineInstance().methods.getMinerInfo(account).call()
+    async updateMinerInfo(account) {
+      let minerInfo = await this.getMineInstance()
+        .methods.getMinerInfo(account)
+        .call()
       let miner = {
         address: account,
         isOnline: minerInfo[1],
@@ -226,7 +233,9 @@ export default {
       this.list = [miner]
     },
     numberHandle(amount) {
-      return new BigNumber(amount).div(new BigNumber(10).pow(18)).toFixed(8,BigNumber.ROUND_DOWN)
+      return new BigNumber(amount)
+        .div(new BigNumber(10).pow(18))
+        .toFixed(8, BigNumber.ROUND_DOWN)
     },
     async getAccount() {
       let accountList = await window.ethereum.request({
@@ -311,11 +320,11 @@ export default {
 .colos {
   color: #00abeb;
 }
-.all{
+.all {
   margin-right: 8px;
 }
-::v-deep .el-dialog{
-  border-radius:10px;
+::v-deep .el-dialog {
+  border-radius: 10px;
 }
 ::v-deep .dialog-footer .el-button {
   width: 100px;
