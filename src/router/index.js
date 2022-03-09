@@ -26,6 +26,16 @@ const routes = [
     name: 'settle',
     component: () => import('../views/settle.vue'),
   },
+  {
+    path: '/newIndex',
+    name: 'newIndex',
+    component: () => import('../views/newIndex.vue'),
+  },
+  {
+    path: '/newNode',
+    name: 'newNode',
+    component: () => import('../views/newNode.vue'),
+  },
 ]
 
 const router = new VueRouter({

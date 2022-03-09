@@ -175,7 +175,7 @@ export default {
         let web3 = this.web3
         this.mineInstance = new web3.eth.Contract(
           JSON.parse(process.env.VUE_APP_MINE_CONTRACT_ABI),
-          process.env.VUE_APP_MINE_CONTRACT_ADDRESS
+          process.env.VUE_APP_MINE_CONTNEWRACT_ADDRESS
         )
       }
       return this.mineInstance
@@ -239,14 +239,14 @@ export default {
     },
     switchCli() {
       let web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.VUE_APP_RAW_URL)
+        new Web3.providers.HttpProvider(process.env.VUE_APP_NEW_URL)
       )
       this.web3 = web3
       this.getPoolInfo()
     },
   },
   created() {
-    let val = false
+    let val = true
     this.$store.commit('modifyOdd1', { val })
     this.switchCli()
   },

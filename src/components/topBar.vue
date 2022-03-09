@@ -14,28 +14,39 @@
             Test Network
           </p>
         </div>
-
         <div
           type="text"
           class="fontsix"
-          @click="goHome('index')"
-          :class="$route.name === 'index' ? 'ColoTexts' : 'texts'"
+          @click="goHome(!odd1 ? 'newIndex' : 'index')"
+          :class="
+            ['index', 'newIndex'].includes($route.name) ? 'ColoTexts' : 'texts'
+          "
         >
           {{ !odd1 ? 'Overview(old)' : 'Overview(new)' }}
           <i class="el-icon-caret-bottom caest"></i>
-          <el-button plain class="buAbs" @click.stop="goHome('index', 'odd1')">
+          <el-button
+            plain
+            class="buAbs"
+            @click.stop="goHome(odd1 ? 'index' : 'newIndex')"
+          >
             {{ odd1 ? 'Overview(old)' : 'Overview(new)' }}
           </el-button>
         </div>
         <div
           type="text"
           class="fontsix"
-          @click="goHome('node')"
-          :class="$route.name === 'node' ? 'ColoTexts' : 'texts'"
+          @click="goHome(!odd1 ? 'newNode' : 'node')"
+          :class="
+            ['node', 'newNode'].includes($route.name) ? 'ColoTexts' : 'texts'
+          "
         >
           {{ !odd2 ? 'Node(old)' : 'Node(new)' }}
           <i class="el-icon-caret-bottom caest"></i>
-          <el-button plain class="buAbs" @click.stop="goHome('node', 'odd2')">
+          <el-button
+            plain
+            class="buAbs"
+            @click.stop="goHome(odd1 ? 'node' : 'newNode')"
+          >
             {{ odd2 ? 'Node(old)' : 'Node(new)' }}
           </el-button>
         </div>
@@ -115,16 +126,14 @@ export default {
   },
   computed: {},
   methods: {
-    goHome(item, type = 1) {
+    goHome(item) {
       let { name } = this.$route
 
-      if (type != 1) {
-        this[type] = !this[type]
-      }
+      // if (type != 1) {
+      //   this[type] = !this[type]
+      // }
       if (name != item) {
-        setTimeout(() => {
-          this.$router.replace({ name: item })
-        }, 0)
+        this.$router.replace({ name: item })
       }
     },
 
@@ -176,7 +185,7 @@ export default {
     },
     switchChain() {
       let defaultChainId = Web3.utils.numberToHex(
-        process.env.VUE_APP_DEFAULT_CHAIN_ID
+        process.env.VUE_APP_DEFAULT_NEW_CHAIN_ID
       )
       window.ethereum
         .request({
@@ -194,18 +203,16 @@ export default {
         })
     },
     async checkChain() {
+      // Worthless
       this.checkMetaMaskExtension()
+      // Worthless
       this.accountAuthorization()
       this.switchChain()
     },
   },
-  created() {
-    this.odd1 = this.$store.state.odd1 || false
-    this.odd2 = this.$store.state.odd2 || false
-  },
+  created() {},
   mounted() {
     let that = this
-
     this.textText = window.textText
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', function (accounts) {
@@ -215,6 +222,10 @@ export default {
         that.$emit('onneCli')
       })
     }
+    setTimeout(() => {
+      this.odd1 = this.$store.state.odd1 || false
+      this.odd2 = this.$store.state.odd2 || false
+    }, 10)
   },
 }
 </script>
@@ -245,8 +256,10 @@ export default {
   font-size: 16px;
   cursor: pointer;
   position: relative;
-  height: 100%;
+  height: 76px;
   min-width: 60px;
+  display: flex;
+  align-items: center;
 }
 .caest {
   transition: all 0.4s;
@@ -258,13 +271,13 @@ export default {
 .fontsix:hover .buAbs {
   transition: all 0.4s;
   opacity: 1;
-  bottom: -50px;
+  bottom: -30px;
 }
 .buAbs {
   height: 40px;
   width: 160px;
   position: absolute;
-  bottom: -60px;
+  bottom: -40px;
   left: 0px;
   opacity: 0;
 }
