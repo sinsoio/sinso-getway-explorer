@@ -69,10 +69,18 @@
           <span> <span class="margin-right">200</span>TSINSO</span>
         </p>
         <div class="flex justify-end margin-tb-xl">
-          <el-button @click="openDialog" type="primary" round
+          <el-button
+            class="buttWid"
+            v-if="1 != 1"
+            @click="openDialog"
+            type="primary"
+            round
             >Settle accounts</el-button
           >
-          <el-button type="primary" round>Inquire</el-button>
+          <el-button class="buttWid" disabled v-else type="info" round
+            >Settled</el-button
+          >
+          <el-button class="buttWid" type="primary" round>Inquire</el-button>
         </div>
       </div>
       <div class="minCont marlrAuto margin-top-xl fontSize-12" v-else>
@@ -168,6 +176,7 @@
 </template>
 
 <script>
+import Web3 from 'web3'
 import TopBar from '../components/topBar'
 
 export default {
@@ -205,6 +214,54 @@ export default {
     openDialog() {
       this.settleStatus = true
     },
+    getOldInstance() {
+      if (!this.mineOldInstance) {
+        let web3 = this.web3
+        this.mineOldInstance = new web3.eth.Contract(
+          JSON.parse(process.env.VUE_APP_PROFITCONFIRM_ABI),
+          process.env.VUE_APP_MINE_CONFIRMCONTRACT_ADDRESS
+        )
+      }
+      return this.mineOldInstance
+    },
+    getNewInstance() {
+      if (!this.mineNewInstance) {
+        let web3 = this.web3
+        this.mineNewInstance = new web3.eth.Contract(
+          JSON.parse(process.env.VUE_APP_PROFITCLAIM_ABI),
+          process.env.VUE_APP_MINE_CLAIMCONTRACT_ADDRESS
+        )
+      }
+      return this.mineNewInstance
+    },
+    async getProinfo() {
+      console.log(await this.getOldInstance())
+      console.log(await this.getOldInstance().methods)
+      let proInfo = await this.getOldInstance()
+        .methods.profitInfo('0x2de69c3464459418eca1281f601b9258775e0c0e')
+        .call()
+      console.log(proInfo)
+      console.log(await this.getOldInstance().methods.confirmProfits())
+      await this.getOldInstance()
+        .methods.confirmProfits()
+        .call({ from: '0x2de69c3464459418eca1281f601b9258775e0c0e' })
+        .then((res) => {
+          console.log(res)
+        })
+
+      console.log(
+        await this.getNewInstance()
+          .methods.profitInfo('0x2de69c3464459418eca1281f601b9258775e0c0e')
+          .call()
+      )
+    },
+  },
+  created() {
+    let web3 = new Web3(
+      new Web3.providers.HttpProvider(process.env.VUE_APP_RPC_URL)
+    )
+    this.web3 = web3
+    this.getProinfo()
   },
 }
 </script>
@@ -230,10 +287,10 @@ export default {
   height: 16px;
   margin-right: 6px;
 }
-.el-button--primary {
+/* .el-button--primary {
   background-color: #00abeb;
   border-color: #00abeb;
-}
+} */
 .flexCont {
   display: flex;
   justify-content: space-between;

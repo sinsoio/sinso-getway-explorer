@@ -60,6 +60,7 @@
       width="1023px"
       center
       :show-close="false"
+      class="dialogs"
     >
       <div class="notice">
         <div class="content colorText align-center flex flex-direction">
@@ -111,7 +112,10 @@
             <span class="buleCircle">{{ time.seconds || '00' }}</span>
             <span>seconds</span>
           </div>
-          <el-button type="primary" class="margin-top" @click="isNotice = false"
+          <el-button
+            type="primary"
+            class="margin-top buttWid"
+            @click="isNotice = false"
             >Confirm</el-button
           >
         </div>
@@ -157,6 +161,8 @@ export default {
         this.isTimes = false
         this.isLoading = false
         if (!sessionStorage.getItem('isNotice')) {
+          this.isInst = 1
+          this.setIng()
           this.isNotice = true
           sessionStorage.setItem('isNotice', true)
         }
@@ -180,7 +186,12 @@ export default {
     },
     async getPoolInfo() {
       this.timing()
+      console.log(await this.getMineInstance())
+      console.log(await this.getMineInstance().methods)
+      console.log(await this.getMineInstance().methods.getPoolInfo())
+      console.log(await this.getMineInstance().methods.getPoolInfo().call())
       let poolInfo = await this.getMineInstance().methods.getPoolInfo().call()
+
       this.list1[0].uv = poolInfo[0]
       this.list1[1].uv = poolInfo[1]
       this.list1[2].uv = poolInfo[2]
@@ -206,38 +217,52 @@ export default {
       }, 45000)
     },
     setIng() {
-      this.times = setInterval(() => {
-        const date2 = dayjs(dayjs().format('YYYY-MM-DD HH:mm:ss'))
-        const date1 = dayjs('2022-03-31 24:00:00')
-        let second = date1.diff(date2, 'second') // 20214000000 default milliseconds
-        if (second > 0) {
-          let days = Math.floor(second / 86400)
-          let hours = Math.floor((second % 86400) / 3600)
-          let mins = Math.floor(((second % 86400) % 3600) / 60)
-          let seconds = Math.floor(((second % 86400) % 3600) % 60)
-          days = days < 10 ? '0' + days : days
-          hours = hours < 10 ? '0' + hours : hours
-          mins = mins < 10 ? '0' + mins : mins
-          seconds = seconds < 10 ? '0' + seconds : seconds
-          this.time = { days, hours, mins, seconds }
-        } else {
-          this.time = { days: '00', hours: '00', mins: '00', seconds: '00' }
-          setInterval(this.times)
-        }
-      }, 1000)
+      this.times = setInterval(
+        () => {
+          this.isInst = 0
+          const date2 = dayjs(dayjs().format('YYYY-MM-DD HH:mm:ss'))
+          const date1 = dayjs('2022-03-31 24:00:00')
+          let second = date1.diff(date2, 'second') // 20214000000 default milliseconds
+          if (second > 0) {
+            let days = Math.floor(second / 86400)
+            let hours = Math.floor((second % 86400) / 3600)
+            let mins = Math.floor(((second % 86400) % 3600) / 60)
+            let seconds = Math.floor(((second % 86400) % 3600) % 60)
+            days = days < 10 ? '0' + days : days
+            hours = hours < 10 ? '0' + hours : hours
+            mins = mins < 10 ? '0' + mins : mins
+            seconds = seconds < 10 ? '0' + seconds : seconds
+            this.time = { days, hours, mins, seconds }
+          } else {
+            this.time = { days: '00', hours: '00', mins: '00', seconds: '00' }
+            setInterval(this.times)
+          }
+        },
+        this.isInst == 1 ? 0 : 1000
+      )
     },
     switchCli() {
-      let web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.VUE_APP_RAW_URL)
-      )
+      this.initIng()
+
+      let { odd1 = false } = this.$store.state
+      let { VUE_APP_RAW_URL, VUE_APP_NEW_URL } = process.env
+      let url = odd1 ? VUE_APP_NEW_URL : VUE_APP_RAW_URL
+      console.log(url)
+      let web3 = new Web3(new Web3.providers.HttpProvider(url))
       this.web3 = web3
       this.getPoolInfo()
-      this.setIng()
+    },
+    initIng() {
+      this.mineInstance = ''
+      this.isTimes = false
+      this.isLoading = true
+      this.poolInfo = ''
+      this.list1.forEach((item) => (item.uv = 'loading'))
+      this.list2.forEach((item) => (item.uv = 'loading'))
     },
   },
   created() {
     this.switchCli()
-    console.log(this.$store.state.odd1)
   },
   mounted() {},
 }
@@ -301,10 +326,10 @@ export default {
   font-weight: 400;
   color: #ffffff;
 }
-::v-deep .el-dialog__body {
+::v-deep .dialogs .el-dialog__body {
   padding: 0 !important;
 }
-::v-deep .el-dialog {
+::v-deep .dialogs .el-dialog {
   box-shadow: none !important;
   background-color: transparent !important;
 }

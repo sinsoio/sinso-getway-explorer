@@ -61,12 +61,14 @@
         ></el-table-column>
         <el-table-column prop="name" label="Operation" align="center">
           <template slot-scope="scope">
-            <el-button
-              round
-              type="primary"
-              @click="showCli(scope.row)"
-              size="small"
+            <el-button type="primary" @click="showCli(scope.row)" size="small"
               >Cashout</el-button
+            >
+            <el-button
+              type="primary"
+              @click="flagCli(scope.row)"
+              size="small"
+              >{{ row.aaa ? 'pledge' : 'Release pledge' }}</el-button
             >
           </template>
         </el-table-column>
@@ -107,6 +109,28 @@
         <el-button type="primary" @click="confirm">Confirm</el-button>
       </span>
     </el-dialog>
+    <!-- tankuang -->
+    <el-dialog
+      :visible.sync="isFlag"
+      width="400px"
+      center
+      :title="obj.aaa ? 'receive' : 'remove staked'"
+      :show-close="false"
+    >
+      <p class="text-center lin-height-18" v-if="obj.aaa">
+        Successfully receive pledged coins to add to the cashable quantity, and
+        you can cash it into your wallet account
+      </p>
+      <p class="text-center lin-height-18" v-else>
+        To release the current node pledged coins, a 30-day lock-up period is
+        required, and your money can be cashed out after the lock-up period
+        expires
+      </p>
+      <span slot="footer" class="dialog-footer">
+        <el-button v-if="!obj.aaa" @click="isFlag = false">Cancel</el-button>
+        <el-button type="primary" @click="doSave">Confirm</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -136,6 +160,8 @@ export default {
       mineInstance: '',
       list: [],
       isShow: false,
+      isFlag: false,
+      obj: { aaa: 0 },
       minerDetail: '',
       withdrawInfo: {
         fromAddress: '',
@@ -177,6 +203,13 @@ export default {
         cashableAwards: this.minerDetail.cashableAwards,
       }
     },
+    flagCli(item) {
+      this.isFlag = true
+      this.obj = { ...item }
+    },
+    doSave() {
+      console.log(this.obj)
+    },
     async confirm() {
       this.$refs.addForm.validate((valid) => {
         if (valid) {
@@ -209,6 +242,8 @@ export default {
       this.updateMinerInfo(account)
     },
     async updateMinerInfo(account) {
+      console.log(this.getMineInstance().methods)
+      console.log(this.getMineInstance().methods.getMinerInfo(account))
       let minerInfo = await this.getMineInstance()
         .methods.getMinerInfo(account)
         .call()
@@ -280,18 +315,20 @@ export default {
         this.withdrawInfo.viewCashableAwards
       )
     },
+    switchCli() {
+      let web3 = new Web3(
+        new Web3.providers.HttpProvider(process.env.VUE_APP_RAW_URL)
+      )
+      this.web3 = web3
+      if (window.textText) {
+        this.connectCli()
+      }
+    },
   },
-  created() {
-    let web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.VUE_APP_RAW_URL)
-    )
-    this.web3 = web3
-  },
+  created() {},
 
   mounted() {
-    if (window.textText) {
-      this.connectCli()
-    }
+    this.switchCli()
   },
 }
 </script>
