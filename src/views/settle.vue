@@ -222,8 +222,11 @@ export default {
   components: { TopBar },
   methods: {
     async openDialog() {
-      let a1 = await this.getOldInstance().methods.confirmProfits().call()
-      console.log(a1)
+      await this.getOldInstance()
+        .methods.confirmProfits()
+        .call({ from: this.textText }, function (error, result) {
+          console.log(error, result)
+        })
       this.settleStatus = true
       this.inSuccess = 2
       this.times = setInterval(() => {
@@ -274,17 +277,6 @@ export default {
         this.isChoise = 2
       }
       console.log(proInfo)
-      console.log(await this.getOldInstance().methods.confirmProfits())
-      await this.getOldInstance()
-        .methods.confirmProfits()
-        .call({ from: this.textText })
-        .then((res) => {
-          console.log(res)
-        })
-
-      console.log(
-        await this.getNewInstance().methods.profitInfo(this.textText).call()
-      )
     },
     clear() {
       this.textText = ''
