@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TopBar @onneCli="getProinfo" @clearCl="clear"/>
+    <TopBar @onneCli="getProinfo" @clearCl="clear" />
     <div class="settle">
       <div class="backCCC">
         <div class="minCont marlrAuto padding-tb-xl" v-if="isSettlement">
@@ -15,13 +15,13 @@
 
           <div class="flex align-center coloCCC">
             <img
-            class="dataIcon"
-            src="../assets/img-icon-time.png"
-            alt=""
-            srcset=""
+              class="dataIcon"
+              src="../assets/img-icon-time.png"
+              alt=""
+              srcset=""
             />
             <p class="fontSize-14">
-              Settlement time 2022.03.01 00:00 to 2022.03.31 24:00
+              Settlement time 2022.03.14 00:00 to 2022.04.15 24:00
             </p>
           </div>
         </div>
@@ -37,8 +37,8 @@
         </div>
       </div>
       <div
-      class="minCont marlrAuto margin-top-xl fontSize-12"
-      v-if="isSettlement"
+        class="minCont marlrAuto margin-top-xl fontSize-12"
+        v-if="isSettlement"
       >
         <p class="flexCont">
           <span>Node Adress</span>
@@ -70,18 +70,21 @@
         </p>
         <div class="flex justify-end margin-tb-xl">
           <el-button
-          class="buttWid"
-          v-if="1 != 1"
-          @click="openDialog"
-          type="primary"
-          round
-          >Settle accounts
-          </el-button
-          >
-          <el-button class="buttWid" disabled v-else type="info" round
-          >Settled
-          </el-button
-          >
+            class="buttWid"
+            v-if="isChoise == 1"
+            @click="openDialog"
+            type="primary"
+            round
+            >Settle accounts
+          </el-button>
+          <el-button
+            class="buttWid"
+            disabled
+            v-else-if="isChoise == 2"
+            type="info"
+            round
+            >Settled
+          </el-button>
           <el-button class="buttWid" type="primary" round>Inquire</el-button>
         </div>
       </div>
@@ -123,23 +126,22 @@
         </p>
         <div class="flex justify-end margin-tb-xl">
           <el-button
-          type="primary"
-          class="buttWid"
-          round
-          @click="$router.go(-1)"
-          >Return
-          </el-button
-          >
+            type="primary"
+            class="buttWid"
+            round
+            @click="$router.go(-1)"
+            >Return
+          </el-button>
         </div>
       </div>
     </div>
     <!-- dialog -->
     <el-dialog
-    title="Tips"
-    :visible.sync="settleStatus"
-    :width="inSuccess == 1 ? '530px' : '430px'"
-    center
-    :show-close="false"
+      title="Tips"
+      :visible.sync="settleStatus"
+      :width="inSuccess == 1 ? '530px' : '430px'"
+      center
+      :show-close="false"
     >
       <div v-if="inSuccess == 2" class="flex flex-direction align-center">
         <p>Your node settlement information is being</p>
@@ -152,12 +154,11 @@
           settlement failed, please try again！
         </p>
         <el-button
-        class="marlrAuto disBlock margin-top"
-        type="primary"
-        @click="settleStatus = false"
-        >Confirm
-        </el-button
-        >
+          class="marlrAuto disBlock margin-top"
+          type="primary"
+          @click="settleStatus = false"
+          >Confirm
+        </el-button>
       </div>
       <div v-if="inSuccess == 1">
         <div class="text-center lin-height-2">
@@ -173,166 +174,198 @@
         </div>
 
         <el-button class="marlrAuto disBlock" type="primary"
-        >Copy network information
-        </el-button
-        >
+          >Copy network information
+        </el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-  import Web3 from 'web3'
-  import TopBar from '../components/topBar'
+import Web3 from 'web3'
+import TopBar from '../components/topBar'
 
-  export default {
-    data() {
-      return {
-        textText: '',
-        settleStatus: false, //弹框
-        inSuccess: 0, //1是成功 2加载中 0失败
-        isSettlement: true, // 是否是结算完成后的状态
-        tableData: [
-          {
-            date: 'Chain name',
-            name: 'TestSsc',
-          },
-          {
-            date: 'RPC URL',
-            name: '',
-          },
-          {
-            date: 'Chain ID',
-            name: '',
-          },
-          {
-            date: 'Currency Symbol',
-            name: 'SIN',
-          },
-          {
-            date: 'Blockchain browser',
-            name: '',
-          },
-        ],
-      }
-    },
-    components: {TopBar},
-    methods: {
-      openDialog() {
-        this.settleStatus = true
-      },
-      getOldInstance() {
-        if (!this.mineOldInstance) {
-          let sourceWeb3 = this.sourceWeb3
-          this.mineOldInstance = new sourceWeb3.eth.Contract(
-            JSON.parse(process.env.VUE_APP_PROFITCONFIRM_ABI),
-            process.env.VUE_APP_MINE_CONFIRMCONTRACT_ADDRESS
-          )
-        }
-        return this.mineOldInstance
-      },
-      getNewInstance() {
-        if (!this.mineNewInstance) {
-          let targetWeb3 = this.targetWeb3
-          this.mineNewInstance = new targetWeb3.eth.Contract(
-            JSON.parse(process.env.VUE_APP_PROFITCLAIM_ABI),
-            process.env.VUE_APP_MINE_CLAIMCONTRACT_ADDRESS
-          )
-        }
-        return this.mineNewInstance
-      },
-      async getProinfo() {
-        this.textText = window.textText
-        console.log(await this.getOldInstance())
-        console.log(await this.getOldInstance().methods)
-        let proInfo = await this.getOldInstance()
+export default {
+  data() {
+    return {
+      textText: '',
+      settleStatus: false, //弹框
+      inSuccess: 0, //1是成功 2加载中 0失败
+      isSettlement: true, // 是否是结算完成后的状态
+      isChoise: 0, // 0loading  1 Can settle   2 Settled
+      targetWeb3: '',
+      sourceWeb: '',
+      tableData: [
+        {
+          date: 'Chain name',
+          name: 'TestSsc',
+        },
+        {
+          date: 'RPC URL',
+          name: '',
+        },
+        {
+          date: 'Chain ID',
+          name: '',
+        },
+        {
+          date: 'Currency Symbol',
+          name: 'SIN',
+        },
+        {
+          date: 'Blockchain browser',
+          name: '',
+        },
+      ],
+    }
+  },
+  components: { TopBar },
+  methods: {
+    async openDialog() {
+      let a1 = await this.getOldInstance().methods.confirmProfits().call()
+      console.log(a1)
+      this.settleStatus = true
+      this.inSuccess = 2
+      this.times = setInterval(() => {
+        this.fitsInfo = this.getNewInstance()
           .methods.profitInfo(this.textText)
           .call()
-        console.log(proInfo)
-        console.log(await this.getOldInstance().methods.confirmProfits())
-        await this.getOldInstance()
-          .methods.confirmProfits()
-          .call({from: this.textText})
-          .then((res) => {
-            console.log(res)
-          })
-
-        console.log(
-          await this.getNewInstance()
-            .methods.profitInfo(this.textText)
-            .call()
-            .then((res) => {
-              console.log(res)
-            })
+        if (this.fitsInfo.state == 3) {
+          this.inSuccess = 1
+          clearInterval(this.times)
+        } else if (this.fitsInfo.state > 3) {
+          this.inSuccess = 0
+          clearInterval(this.times)
+        }
+        console.log(this.times)
+      }, 3000)
+    },
+    getOldInstance() {
+      if (!this.mineOldInstance) {
+        let sourceWeb3 = this.sourceWeb3
+        this.mineOldInstance = new sourceWeb3.eth.Contract(
+          JSON.parse(process.env.VUE_APP_PROFITCONFIRM_ABI),
+          process.env.VUE_APP_MINE_CONFIRMCONTRACT_ADDRESS
         )
-      },
-      clear() {
-        this.textText = ''
-      },
+      }
+      return this.mineOldInstance
     },
-    created() {
-      let sourceWeb3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.VUE_APP_SOURCE_CHAIN_URL)
-      )
-      this.sourceWeb3 = sourceWeb3
+    getNewInstance() {
+      if (!this.mineNewInstance) {
+        let targetWeb3 = this.targetWeb3
+        this.mineNewInstance = new targetWeb3.eth.Contract(
+          JSON.parse(process.env.VUE_APP_PROFITCLAIM_ABI),
+          process.env.VUE_APP_MINE_CLAIMCONTRACT_ADDRESS
+        )
+      }
+      return this.mineNewInstance
+    },
+    async getProinfo() {
+      this.textText = await this.getAccount()
+      console.log(this.textText)
+      console.log(await this.getOldInstance())
+      console.log(await this.getOldInstance().methods)
+      let proInfo = await this.getOldInstance()
+        .methods.profitInfo(this.textText)
+        .call()
+      if (proInfo.state <= 1) {
+        this.isChoise = 1
+      } else if (proInfo.state == 3) {
+        this.isChoise = 2
+      }
+      console.log(proInfo)
+      console.log(await this.getOldInstance().methods.confirmProfits())
+      await this.getOldInstance()
+        .methods.confirmProfits()
+        .call({ from: this.textText })
+        .then((res) => {
+          console.log(res)
+        })
 
-      let targetWeb3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.VUE_APP_TARGET_CHAIN_URL)
+      console.log(
+        await this.getNewInstance().methods.profitInfo(this.textText).call()
       )
-      this.targetWeb3 = targetWeb3
     },
-    mounted() {
-      if (window.textText) {
-        this.getProinfo()
+    clear() {
+      this.textText = ''
+    },
+    async getAccount() {
+      let accountList = await window.ethereum.request({
+        method: 'eth_requestAccounts',
+      })
+      return accountList[0]
+    },
+  },
+  watch: {
+    settleStatus(val) {
+      if (!val) {
+        clearInterval(this.times)
       }
     },
-  }
+  },
+  created() {
+    let sourceWeb3 = new Web3(
+      new Web3.providers.HttpProvider(process.env.VUE_APP_SOURCE_CHAIN_URL)
+    )
+    this.sourceWeb3 = sourceWeb3
+
+    let targetWeb3 = new Web3(
+      new Web3.providers.HttpProvider(process.env.VUE_APP_TARGET_CHAIN_URL)
+    )
+    this.targetWeb3 = targetWeb3
+  },
+  mounted() {
+    if (window.textText) {
+      this.getProinfo()
+    }
+  },
+}
 </script>
 
 <style scoped>
-  .paddingDioText {
-    padding: 17px 0;
-  }
+.paddingDioText {
+  padding: 17px 0;
+}
 
-  .colorLoading {
-    color: #00abeb;
-  }
+.colorLoading {
+  color: #00abeb;
+}
 
-  .colorFail {
-    color: #fb2745;
-  }
+.colorFail {
+  color: #fb2745;
+}
 
-  .colorText {
-    color: #092530;
-  }
+.colorText {
+  color: #092530;
+}
 
-  .lineHeight {
-    line-height: 2;
-  }
+.lineHeight {
+  line-height: 2;
+}
 
-  .dataIcon {
-    width: 18px;
-    height: 16px;
-    margin-right: 6px;
-  }
+.dataIcon {
+  width: 18px;
+  height: 16px;
+  margin-right: 6px;
+}
 
-  /* .el-button--primary {
+/* .el-button--primary {
     background-color: #00abeb;
     border-color: #00abeb;
   } */
-  .flexCont {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 2px;
-    padding: 20px;
-    background-color: #ecf2f4;
-  }
+.flexCont {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+  padding: 20px;
+  background-color: #ecf2f4;
+}
 
-  .addition {
-    background-color: #f3f5f8;
-  }
+.addition {
+  background-color: #f3f5f8;
+}
 
-  .colBlue {
-    color: #1bbe7f;
-  }
+.colBlue {
+  color: #1bbe7f;
+}
 </style>
