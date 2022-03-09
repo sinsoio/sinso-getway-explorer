@@ -140,7 +140,7 @@ export default {
     async connectCli() {
       await this.checkChain()
       let { name } = this.$route
-      if (name === 'node') {
+      if (['node', 'newNode', 'settle'].includes(name)) {
         this.$emit('onneCli')
       }
     },

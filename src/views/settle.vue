@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TopBar />
+    <TopBar @onneCli="getProinfo" @clearCl="clear" />
     <div class="settle">
       <div class="backCCC">
         <div class="minCont marlrAuto padding-tb-xl" v-if="isSettlement">
@@ -130,6 +130,7 @@
         </div>
       </div>
     </div>
+    <!-- dialog -->
     <el-dialog
       title="Tips"
       :visible.sync="settleStatus"
@@ -182,6 +183,7 @@ import TopBar from '../components/topBar'
 export default {
   data() {
     return {
+      textText: '',
       settleStatus: false, //弹框
       inSuccess: 0, //1是成功 2加载中 0失败
       isSettlement: true, // 是否是结算完成后的状态
@@ -235,6 +237,7 @@ export default {
       return this.mineNewInstance
     },
     async getProinfo() {
+      this.textText = window.textText
       console.log(await this.getOldInstance())
       console.log(await this.getOldInstance().methods)
       let proInfo = await this.getOldInstance()
@@ -255,13 +258,20 @@ export default {
           .call()
       )
     },
+    clear() {
+      this.textText = ''
+    },
   },
   created() {
     let web3 = new Web3(
       new Web3.providers.HttpProvider(process.env.VUE_APP_RPC_URL)
     )
     this.web3 = web3
-    this.getProinfo()
+  },
+  mounted() {
+    if (window.textText) {
+      this.getProinfo()
+    }
   },
 }
 </script>
