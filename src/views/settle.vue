@@ -145,24 +145,28 @@
           </p>
           <p class="flexCont margin-bottom">
             <span>State</span>
-            <span v-if="inSuccess == 1" class="colBlue">settled</span>
-            <span v-else-if="inSuccess == 0" class="colorFail">settled</span>
-            <span v-else class="colorFail">loading...</span>
+            <span v-if="isChoise == 1" class="colBlue">unsettled</span>
+            <span v-else class="colBlue">settled</span>
+            <!-- <span v-else-if="inSuccess == 0" class="colorFail">settled</span> -->
           </p>
           <p class="fontSize-14 margin-top margin-bottom-sm">
             Please go to the new network to check the wallet balance
           </p>
           <p class="flexCont addition">
             <span>Chain name</span>
-            <span> TestSsc</span>
+            <span> SSC</span>
           </p>
-          <p class="flexCont">
+          <div class="flexCont">
             <span>RPC URL</span>
-            <span></span>
-          </p>
+            <div>
+              <p>https://data-seed-pressc-1.sinso.io/</p>
+              <p>https://data-seed-pressc-2.sinso.io</p>
+              <p>https://data-seed-pressc-3.sinso.io</p>
+            </div>
+          </div>
           <p class="flexCont addition">
             <span>Chain ID</span>
-            <span> </span>
+            <span>8845</span>
           </p>
           <p class="flexCont">
             <span>Currency Symbol</span>
@@ -170,7 +174,7 @@
           </p>
           <p class="flexCont addition">
             <span>Blockchain browser</span>
-            <span> </span>
+            <span>https://testssc.sinso.io/</span>
           </p>
           <div class="flex justify-end margin-tb-xl">
             <el-button
@@ -252,15 +256,15 @@ export default {
       tableData: [
         {
           date: 'Chain name',
-          name: 'TestSsc',
+          name: 'SSC',
         },
         {
           date: 'RPC URL',
-          name: '',
+          name: 'https://data-seed-pressc-2.sinso.io',
         },
         {
           date: 'Chain ID',
-          name: '',
+          name: '8845',
         },
         {
           date: 'Currency Symbol',
@@ -268,7 +272,7 @@ export default {
         },
         {
           date: 'Blockchain browser',
-          name: '',
+          name: 'https://testssc.sinso.io/',
         },
       ],
     }
@@ -330,16 +334,15 @@ export default {
       let proInfo = await this.getOldInstance()
         .methods.profitInfo(this.textText)
         .call()
+      this.updateMinerInfo(this.textText)
       if (proInfo.state <= 1) {
         this.isChoise = 1
-        this.isTus = true
       } else if (proInfo.state == 3) {
         this.isChoise = 2
-        this.updateMinerInfo(this.textText, proInfo.profits)
+
         this.inSuccess = 1
       } else if ([2, 4].includes(proInfo.state)) {
         this.isChoise = 0
-        this.isTus = true
       }
       console.log(proInfo)
     },
@@ -350,10 +353,14 @@ export default {
       this.minerDetail = ''
       this.isSettlement = false
     },
-    async updateMinerInfo(account, totalNums) {
+    async updateMinerInfo(account) {
       let minerInfo = await this.getMineInstance()
         .methods.getMinerInfo(account)
         .call()
+      let totalNums = this.jiaNumber(
+        this.numberHandle(minerInfo[2]),
+        this.numberHandle(minerInfo[3])
+      )
       this.minerDetail = {
         address: account,
         deposits: minerInfo[2],
@@ -361,7 +368,7 @@ export default {
         withdrawnAwards: minerInfo[4],
         lockedAwards: minerInfo[5],
         cashableAwards: minerInfo[6],
-        totalNums: this.numberHandle(totalNums),
+        totalNums,
       }
     },
     getMineInstance() {

@@ -10,6 +10,9 @@ export default {
     numberHandle(amount) {
       return new BigNumber(amount).div(new BigNumber(10).pow(18)).toFixed(8)
     },
+    jiaNumber(num1, num2) {
+      return new BigNumber(num1).plus(num2)
+    },
     checkMetaMaskExtension() {
       if (!window.ethereum) {
         this.$message.error(
