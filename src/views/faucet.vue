@@ -91,14 +91,13 @@ export default {
         return
       }
       let trxHash = await this.airdrop(account)
-      console.log('trxHash==>' + trxHash)
-      if (trxHash != ""){
+      if (trxHash != '') {
         this.$message.success('Received successfully!！')
       }
     },
     async inWhiteList(address) {
       let res = await this.getNewPoolInstance()
-        .methods.inList(address,3)
+        .methods.inList(address, 3)
         .call()
         .then((res) => {
           return res
@@ -156,7 +155,7 @@ export default {
       return this.airdropInstance
     },
     getNewPoolInstance() {
-      if(!this.newPoolInstance) {
+      if (!this.newPoolInstance) {
         let web3 = this.web3
         this.newPoolInstance = new web3.eth.Contract(
           JSON.parse(process.env.VUE_APP_NEW_POOL_EXPIRE_ABI),
@@ -164,7 +163,7 @@ export default {
         )
       }
       return this.newPoolInstance
-    }
+    },
   },
   created() {
     let web3 = new Web3(

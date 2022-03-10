@@ -165,15 +165,13 @@ export default {
         .then(() => {
           this.$message.success('Connect MetaMask Success!')
         })
-        .catch((err) => {
-          console.log(err)
+        .catch(() => {
           this.$message.error('Failed to add a default network to MetaMask!')
         })
     },
     async watchToken() {
       try {
         let defaultTokenJSON = JSON.parse(process.env.VUE_APP_DEFAULT_TOKEN)
-        console.log(defaultTokenJSON)
         await window.ethereum.request({
           method: 'wallet_watchAsset',
           params: defaultTokenJSON,
@@ -196,7 +194,6 @@ export default {
           this.$message.success('Connect MetaMask Success!')
         })
         .catch((err) => {
-          console.log(err)
           if (err.code === 4902) {
             this.addChain()
           }

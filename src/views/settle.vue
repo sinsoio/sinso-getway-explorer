@@ -122,12 +122,12 @@
               >Settled
             </el-button>
             <el-button
-            class="buttWid"
-            disabled
-            v-else-if="isChoise == 0"
-            type="info"
-            round
-            >Not Start
+              class="buttWid"
+              disabled
+              v-else-if="isChoise == 0"
+              type="info"
+              round
+              >Not Start
             </el-button>
             <el-button
               v-if="minerDetail"
@@ -154,7 +154,7 @@
           <p class="flexCont margin-bottom">
             <span>State</span>
             <span v-if="isChoise == 1" class="colBlue">Unsettled</span>
-            <span v-else-if="isChoise==0" class="colorFail">Not Start</span>
+            <span v-else-if="isChoise == 0" class="colorFail">Not Start</span>
             <span v-else class="colBlue">Settled</span>
             <!-- <span v-else-if="inSuccess == 0" class="colorFail">settled</span> -->
           </p>
@@ -314,7 +314,6 @@ export default {
           this.inSuccess = 0
           clearInterval(this.times)
         }
-        console.log(this.fitsInfo)
       }, 3000)
     },
     getOldInstance() {
@@ -358,8 +357,6 @@ export default {
           this.isChoise = 0
         }
       }
-
-      console.log(proInfo)
     },
     clear() {
       this.isTus = false
