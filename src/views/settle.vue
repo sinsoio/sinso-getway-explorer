@@ -122,6 +122,14 @@
               >Settled
             </el-button>
             <el-button
+            class="buttWid"
+            disabled
+            v-else-if="isChoise == 0"
+            type="info"
+            round
+            >Not Start
+            </el-button>
+            <el-button
               v-if="minerDetail"
               class="buttWid"
               type="primary"
@@ -145,8 +153,9 @@
           </p>
           <p class="flexCont margin-bottom">
             <span>State</span>
-            <span v-if="isChoise == 1" class="colBlue">unsettled</span>
-            <span v-else class="colBlue">settled</span>
+            <span v-if="isChoise == 1" class="colBlue">Unsettled</span>
+            <span v-else-if="isChoise==0" class="colorFail">Not Start</span>
+            <span v-else class="colBlue">Settled</span>
             <!-- <span v-else-if="inSuccess == 0" class="colorFail">settled</span> -->
           </p>
           <p class="fontSize-14 margin-top margin-bottom-sm">
@@ -336,15 +345,20 @@ export default {
         .call()
       this.updateMinerInfo(this.textText)
       let poolStatus = await this.getPoolStatus()
-      if (!poolStatus && proInfo.state <= 1) {
-        this.isChoise = 1
-      } else if (proInfo.state == 3) {
-        this.isChoise = 2
-
-        this.inSuccess = 1
-      } else if ([2, 4].includes(proInfo.state)) {
+      if (poolStatus) {
         this.isChoise = 0
+      } else {
+        if (proInfo.state <= 1) {
+          this.isChoise = 1
+        } else if (proInfo.state == 3) {
+          this.isChoise = 2
+
+          this.inSuccess = 1
+        } else if ([2, 4].includes(proInfo.state)) {
+          this.isChoise = 0
+        }
       }
+
       console.log(proInfo)
     },
     clear() {
@@ -392,8 +406,8 @@ export default {
       if (!this.poolExpireInstance) {
         let web3 = this.sourceWeb3
         this.poolExpireInstance = new web3.eth.Contract(
-          JSON.parse(process.env.VUE_APP_POOL_EXPIRE_ABI),
-          process.env.VUE_APP_POOL_EXPIRE_CONTRACT_ADDRESS
+          JSON.parse(process.env.VUE_APP_OLD_POOL_ABI),
+          process.env.VUE_APP_OLD_POOL_CONTRACT_ADDRESS
         )
       }
       return this.poolExpireInstance
