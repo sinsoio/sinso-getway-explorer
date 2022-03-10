@@ -291,7 +291,7 @@ export default {
     async openDialog() {
       let encodeAbi = this.getOldInstance().methods.confirmProfits().encodeABI()
       const transactionParameters = {
-        to: process.env.VUE_APP_MINE_CONFIRMCONTRACT_ADDRESS,
+        to: process.env.VUE_APP_CONFIRM_CONTRACT_ADDRESS,
         from: this.textText,
         data: encodeAbi,
       }
@@ -321,8 +321,8 @@ export default {
       if (!this.mineOldInstance) {
         let sourceWeb3 = this.sourceWeb3
         this.mineOldInstance = new sourceWeb3.eth.Contract(
-          JSON.parse(process.env.VUE_APP_PROFITCONFIRM_ABI),
-          process.env.VUE_APP_MINE_CONFIRMCONTRACT_ADDRESS
+          JSON.parse(process.env.VUE_APP_CONFIRM_CONTRACT_ABI),
+          process.env.VUE_APP_CONFIRM_CONTRACT_ADDRESS
         )
       }
       return this.mineOldInstance
@@ -331,8 +331,8 @@ export default {
       if (!this.mineNewInstance) {
         let targetWeb3 = this.targetWeb3
         this.mineNewInstance = new targetWeb3.eth.Contract(
-          JSON.parse(process.env.VUE_APP_PROFITCLAIM_ABI),
-          process.env.VUE_APP_MINE_CLAIMCONTRACT_ADDRESS
+          JSON.parse(process.env.VUE_APP_CLAIM_CONTRACT_ABI),
+          process.env.VUE_APP_CLAIM_CONTRACT_ADDRESS
         )
       }
       return this.mineNewInstance
@@ -390,8 +390,8 @@ export default {
       if (!this.mineInstance) {
         let web3 = this.targetWeb3
         this.mineInstance = new web3.eth.Contract(
-          JSON.parse(process.env.VUE_APP_MINE_CONTNEWRACT_ABI),
-          process.env.VUE_APP_MINE_CONTNEWRACT_ADDRESS
+          JSON.parse(process.env.VUE_APP_NEW_MINE_CONTRACT_ABI),
+          process.env.VUE_APP_NEW_MINE_CONTRACT_ADDRESS
         )
       }
       return this.mineInstance
