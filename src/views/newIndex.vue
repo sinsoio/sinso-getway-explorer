@@ -215,7 +215,7 @@ export default {
         () => {
           this.isInst = 0
           const date2 = dayjs(dayjs().format('YYYY-MM-DD HH:mm:ss'))
-          const date1 = dayjs('2022-03-31 24:00:00')
+          const date1 = dayjs('2022-03-13 24:00:00')
           let second = date1.diff(date2, 'second') // 20214000000 default milliseconds
           if (second > 0) {
             let days = Math.floor(second / 86400)
