@@ -157,7 +157,7 @@ export default {
   },
   created() {
     let web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.VUE_APP_RAW_URL)
+      new Web3.providers.HttpProvider(process.env.VUE_APP_TARGET_CHAIN_URL)
     )
     this.web3 = web3
   },
