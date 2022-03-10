@@ -335,7 +335,7 @@ export default {
         .methods.profitInfo(this.textText)
         .call()
       this.updateMinerInfo(this.textText)
-      let poolStatus = this.getPoolStatus()
+      let poolStatus = await this.getPoolStatus()
       if (!poolStatus && proInfo.state <= 1) {
         this.isChoise = 1
       } else if (proInfo.state == 3) {
