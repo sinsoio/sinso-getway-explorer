@@ -334,7 +334,7 @@ export default {
         this.isChoise = 2
         this.updateMinerInfo(this.textText, proInfo.profits)
         this.inSuccess = 1
-      } else if (proInfo.state == 4) {
+      } else if ([2, 4].includes(proInfo.state)) {
         this.isChoise = 0
         this.isTus = true
       }
