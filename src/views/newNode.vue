@@ -167,7 +167,7 @@ export default {
       this.isShow = true
       this.withdrawInfo = {
         fromAddress: this.minerDetail.address,
-        toAddress: process.env.VUE_APP_OLD_MINE_CONTRACT_ADDRESS,
+        toAddress: process.env.VUE_APP_NEW_MINE_CONTRACT_ADDRESS,
         viewCashableAwards: this.numberHandle(this.minerDetail.cashableAwards),
         cashableAwards: this.minerDetail.cashableAwards,
       }
@@ -244,7 +244,7 @@ export default {
         .methods.withdraw(amount)
         .encodeABI()
       const transactionParameters = {
-        to: process.env.VUE_APP_OLD_MINE_CONTRACT_ADDRESS,
+        to: process.env.VUE_APP_NEW_MINE_CONTRACT_ADDRESS,
         from: account,
         data: encodeAbi,
       }
@@ -258,8 +258,8 @@ export default {
       if (!this.mineInstance) {
         let web3 = this.web3
         this.mineInstance = new web3.eth.Contract(
-          JSON.parse(process.env.VUE_APP_OLD_MINE_CONTRACT_ABI),
-          process.env.VUE_APP_OLD_MINE_CONTRACT_ADDRESS
+          JSON.parse(process.env.VUE_APP_NEW_MINE_CONTRACT_ABI),
+          process.env.VUE_APP_NEW_MINE_CONTRACT_ADDRESS
         )
       }
       return this.mineInstance
@@ -277,10 +277,10 @@ export default {
     },
   },
   created() {
-    let val = false
+    let val = true
     this.$store.commit('modifyOdd2', { val })
     let web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.VUE_APP_RAW_URL)
+      new Web3.providers.HttpProvider(process.env.VUE_APP_TARGET_CHAIN_URL)
     )
     this.web3 = web3
   },

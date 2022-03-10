@@ -14,21 +14,43 @@
             Test Network
           </p>
         </div>
+        <div
+          type="text"
+          class="fontsix"
+          @click="goHome(!odd1 ? 'newIndex' : 'index')"
+          :class="
+            ['index', 'newIndex'].includes($route.name) ? 'ColoTexts' : 'texts'
+          "
+        >
+          {{ !odd1 ? 'Overview(old)' : 'Overview(new)' }}
+          <i class="el-icon-caret-bottom caest"></i>
+          <el-button
+            plain
+            class="buAbs"
+            @click.stop="goHome(odd1 ? 'index' : 'newIndex')"
+          >
+            {{ odd1 ? 'Overview(old)' : 'Overview(new)' }}
+          </el-button>
+        </div>
+        <div
+          type="text"
+          class="fontsix"
+          @click="goHome(!odd2 ? 'newNode' : 'node')"
+          :class="
+            ['node', 'newNode'].includes($route.name) ? 'ColoTexts' : 'texts'
+          "
+        >
+          {{ !odd2 ? 'Node(old)' : 'Node(new)' }}
+          <i class="el-icon-caret-bottom caest"></i>
+          <el-button
+            plain
+            class="buAbs"
+            @click.stop="goHome(odd2 ? 'node' : 'newNode')"
+          >
+            {{ odd2 ? 'Node(old)' : 'Node(new)' }}
+          </el-button>
+        </div>
 
-        <el-button
-          type="text"
-          class="fontsix"
-          :class="$route.name === 'index' ? 'ColoTexts' : 'texts'"
-          @click="goHome('index')"
-          >Overview</el-button
-        >
-        <el-button
-          type="text"
-          class="fontsix"
-          @click="goHome('node')"
-          :class="$route.name === 'node' ? 'ColoTexts' : 'texts'"
-          >Node</el-button
-        >
         <el-button
           class="fontsix"
           type="text"
@@ -38,17 +60,33 @@
         ><el-button class="texts fontsix" type="text" @click="goBacks"
           >Docs</el-button
         >
+        <el-button
+          type="text"
+          class="fontsix"
+          @click="goHome('settle')"
+          :class="$route.name === 'settle' ? 'ColoTexts' : 'texts'"
+          >Settle</el-button
+        >
         <div class="flex align-center">
           <div
             class="flex align-center justify-around pointer margin-right-xs souCont"
+          ></div>
+          <el-button type="primary" @click="connectCli" v-if="!textText"
+            >Connect MetaMask</el-button
           >
-          </div>
-          <el-button type="primary" @click="connectCli" v-if="!textText">Connect MetaMask</el-button>
-          <el-dropdown v-if="textText" type="primary" split-button @command="handleWallet" @click="connectCli">
-            {{valVal}}
+          <el-dropdown
+            v-if="textText"
+            type="primary"
+            split-button
+            @command="handleWallet"
+            @click="connectCli"
+          >
+            {{ valVal }}
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="addToken">Add Token</el-dropdown-item>
-              <el-dropdown-item command="logout" divided>Logout</el-dropdown-item>
+              <el-dropdown-item command="logout" divided
+                >Logout</el-dropdown-item
+              >
             </el-dropdown-menu>
           </el-dropdown>
         </div>
@@ -67,6 +105,8 @@ export default {
     return {
       valVal: '',
       isFrame: false,
+      odd1: false,
+      odd2: false,
     }
   },
   watch: {
@@ -77,19 +117,30 @@ export default {
         this.valVal = ''
       }
     },
+    odd1(val) {
+      this.$store.commit('modifyOdd1', { val })
+    },
+    odd2(val) {
+      this.$store.commit('modifyOdd2', { val })
+    },
   },
   computed: {},
   methods: {
     goHome(item) {
-      if (this.$route.name !== item) {
+      let { name } = this.$route
+
+      // if (type != 1) {
+      //   this[type] = !this[type]
+      // }
+      if (name != item) {
         this.$router.replace({ name: item })
       }
     },
 
     async connectCli() {
       await this.checkChain()
-      let {name} = this.$route
-      if (name === 'node') {
+      let { name } = this.$route
+      if (['node', 'newNode', 'settle'].includes(name)) {
         this.$emit('onneCli')
       }
     },
@@ -97,7 +148,7 @@ export default {
     handleWallet(command) {
       if (command === 'addToken') {
         this.watchToken()
-      }else if (command === 'logout') {
+      } else if (command === 'logout') {
         this.textText = ''
         window.textText = ''
         this.$message.success('Disconnect MetaMask Success!')
@@ -106,15 +157,18 @@ export default {
     },
     addChain() {
       let defaultChainJSON = JSON.parse(process.env.VUE_APP_DEFAULT_CHAIN)
-      window.ethereum.request({
-        method: 'wallet_addEthereumChain',
-        params: defaultChainJSON
-      }).then(() => {
-        this.$message.success('Connect MetaMask Success!')
-      }).catch((err) => {
-        console.log(err)
-        this.$message.error('Failed to add a default network to MetaMask!')
-      })
+      window.ethereum
+        .request({
+          method: 'wallet_addEthereumChain',
+          params: defaultChainJSON,
+        })
+        .then(() => {
+          this.$message.success('Connect MetaMask Success!')
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message.error('Failed to add a default network to MetaMask!')
+        })
     },
     async watchToken() {
       try {
@@ -122,7 +176,7 @@ export default {
         console.log(defaultTokenJSON)
         await window.ethereum.request({
           method: 'wallet_watchAsset',
-          params: defaultTokenJSON
+          params: defaultTokenJSON,
         })
       } catch (err) {
         console.log(err)
@@ -130,24 +184,31 @@ export default {
       }
     },
     switchChain() {
-      let defaultChainId = Web3.utils.numberToHex(process.env.VUE_APP_DEFAULT_CHAIN_ID)
-      window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: defaultChainId }]
-      }).then(() => {
-        this.$message.success('Connect MetaMask Success!')
-      }).catch((err) => {
-        console.log(err)
-        if (err.code === 4902) {
-          this.addChain()
-        }
-      })
+      let defaultChainId = Web3.utils.numberToHex(
+        process.env.VUE_APP_DEFAULT_NEW_CHAIN_ID
+      )
+      window.ethereum
+        .request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: defaultChainId }],
+        })
+        .then(() => {
+          this.$message.success('Connect MetaMask Success!')
+        })
+        .catch((err) => {
+          console.log(err)
+          if (err.code === 4902) {
+            this.addChain()
+          }
+        })
     },
     async checkChain() {
+      // Worthless
       this.checkMetaMaskExtension()
+      // Worthless
       this.accountAuthorization()
       this.switchChain()
-    }
+    },
   },
   created() {},
   mounted() {
@@ -161,6 +222,10 @@ export default {
         that.$emit('onneCli')
       })
     }
+    setTimeout(() => {
+      this.odd1 = this.$store.state.odd1 || false
+      this.odd2 = this.$store.state.odd2 || false
+    }, 10)
   },
 }
 </script>
@@ -173,13 +238,12 @@ export default {
   top: 0;
   width: 100vw;
   background-color: #ffffff;
-  overflow-x: hidden;
 }
 .logoImgs {
   width: 84px;
 }
 .souCont {
-  width: 400px;
+  width: 300px;
   height: 76px;
   /* background-color: #ecf2f4;
   color: #7d8087; */
@@ -188,22 +252,45 @@ export default {
   width: 24px;
 }
 .fontsix {
-  transition: all 0.3s;
   font-weight: 300;
   font-size: 16px;
+  cursor: pointer;
+  position: relative;
+  height: 76px;
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+}
+.caest {
+  transition: all 0.4s;
+  transform: rotate(0deg);
+}
+.fontsix:hover .caest {
+  transform: rotate(-180deg);
+}
+.fontsix:hover .buAbs {
+  transition: all 0.4s;
+  opacity: 1;
+  bottom: -30px;
+}
+.buAbs {
+  height: 40px;
+  width: 160px;
+  position: absolute;
+  bottom: -40px;
+  left: 0px;
+  opacity: 0;
 }
 .tabBars .ColoTexts {
   color: #409eff;
-  transform: scale(1);
+  /* transform: scale(1); */
   font-weight: bold;
 }
 .tabBars .texts {
   color: #999999;
-  transform: scale(0.8);
+  /* transform: scale(0.8); */
+  font-size: 14px;
 }
-/* ::v-deep .el-button {
- 
-} */
 ::v-deep .souCont .el-form-item {
   margin-bottom: 0px;
 }
