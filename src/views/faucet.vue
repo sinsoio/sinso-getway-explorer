@@ -55,6 +55,7 @@ export default {
       web3: '',
       mineInstance: '',
       airdropInstance: '',
+      newPoolInstance: '',
     }
   },
   computed: {},
@@ -90,14 +91,13 @@ export default {
         return
       }
       let trxHash = await this.airdrop(account)
-      console.log('trxHash==>' + trxHash)
-      if (trxHash != ""){
+      if (trxHash != '') {
         this.$message.success('Received successfully!！')
       }
     },
     async inWhiteList(address) {
-      let res = await this.getMineInstance()
-        .methods.inWhiteList(address)
+      let res = await this.getNewPoolInstance()
+        .methods.inList(address, 3)
         .call()
         .then((res) => {
           return res
@@ -138,8 +138,8 @@ export default {
       if (!this.mineInstance) {
         let web3 = this.web3
         this.mineInstance = new web3.eth.Contract(
-          JSON.parse(process.env.VUE_APP_MINE_CONTRACT_ABI),
-          process.env.VUE_APP_MINE_CONTRACT_ADDRESS
+          JSON.parse(process.env.VUE_APP_OLD_MINE_CONTRACT_ABI),
+          process.env.VUE_APP_OLD_MINE_CONTRACT_ADDRESS
         )
       }
       return this.mineInstance
@@ -154,10 +154,20 @@ export default {
       }
       return this.airdropInstance
     },
+    getNewPoolInstance() {
+      if (!this.newPoolInstance) {
+        let web3 = this.web3
+        this.newPoolInstance = new web3.eth.Contract(
+          JSON.parse(process.env.VUE_APP_NEW_POOL_EXPIRE_ABI),
+          process.env.VUE_APP_NEW_POOL_CONTRACT_ADDRESS
+        )
+      }
+      return this.newPoolInstance
+    },
   },
   created() {
     let web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.VUE_APP_RAW_URL)
+      new Web3.providers.HttpProvider(process.env.VUE_APP_TARGET_CHAIN_URL)
     )
     this.web3 = web3
   },

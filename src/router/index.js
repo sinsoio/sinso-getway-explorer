@@ -21,6 +21,21 @@ const routes = [
     name: 'faucet',
     component: () => import('../views/faucet.vue'),
   },
+  {
+    path: '/settle',
+    name: 'settle',
+    component: () => import('../views/settle.vue'),
+  },
+  {
+    path: '/newIndex',
+    name: 'newIndex',
+    component: () => import('../views/newIndex.vue'),
+  },
+  {
+    path: '/newNode',
+    name: 'newNode',
+    component: () => import('../views/newNode.vue'),
+  },
 ]
 
 const router = new VueRouter({
