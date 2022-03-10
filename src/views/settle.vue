@@ -222,8 +222,11 @@
           </el-table>
         </div>
 
-        <el-button class="marlrAuto disBlock" type="primary"
-          >Copy network information
+        <el-button
+          class="marlrAuto disBlock"
+          type="primary"
+          @click="settleStatus = false"
+          >Confirm
         </el-button>
       </div>
     </el-dialog>

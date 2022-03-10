@@ -82,8 +82,8 @@
             </p>
             <p>to switch to Ssc (test network) to continue node mining.</p>
             <p>
-              1. BSC test chain mining will stop running at 24:00 on 2022.02.28
-              (time parameter)
+              1. The BSC test chain mining will stop running at 2022.03.13 24:00
+              (UTC+8)
             </p>
             <p>
               2. After the operation is stopped, the user will first settle the
@@ -94,11 +94,13 @@
               (Ssc test network).
             </p>
             <p>
-              3. Reward settlement time: 2022.03.01 00:00 to 2022.03.31 24:00
+              3. Reward settlement time: 2022.03.14 00:00 to 2022.04.15 24:00
+              (UTC+8)
             </p>
-            <p>4. New network access start time: 2022.03.01 24:00</p>
+            <p>4. New network access start time: 2022.03.14 12:00 (UTC+8)</p>
             <p>
-              5. The new network officially starts mining time: 2022.03.03 24:00
+              5. The new network officially starts mining time: 2022.03.17 12:00
+              (UTC+8)
             </p>
           </div>
           <p class="margin-top margin-bottom-sm">Old network stop countdown</p>
