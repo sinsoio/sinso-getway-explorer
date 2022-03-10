@@ -391,7 +391,7 @@ export default {
     getPoolExpireInstance() {
       if (!this.poolExpireInstance) {
         let web3 = this.sourceWeb3
-        this.mineInstance = new web3.eth.Contract(
+        this.poolExpireInstance = new web3.eth.Contract(
           JSON.parse(process.env.VUE_APP_POOL_EXPIRE_ABI),
           process.env.VUE_APP_POOL_EXPIRE_CONTRACT_ADDRESS
         )
