@@ -335,7 +335,8 @@ export default {
         .methods.profitInfo(this.textText)
         .call()
       this.updateMinerInfo(this.textText)
-      if (proInfo.state <= 1) {
+      let poolStatus = this.getPoolStatus()
+      if (!poolStatus && proInfo.state <= 1) {
         this.isChoise = 1
       } else if (proInfo.state == 3) {
         this.isChoise = 2
@@ -386,6 +387,22 @@ export default {
         method: 'eth_requestAccounts',
       })
       return accountList[0]
+    },
+    getPoolExpireInstance() {
+      if (!this.poolExpireInstance) {
+        let web3 = this.sourceWeb3
+        this.mineInstance = new web3.eth.Contract(
+          JSON.parse(process.env.VUE_APP_POOL_EXPIRE_ABI),
+          process.env.VUE_APP_POOL_EXPIRE_CONTRACT_ADDRESS
+        )
+      }
+      return this.poolExpireInstance
+    },
+    async getPoolStatus() {
+      let poolStatus = await this.getPoolExpireInstance()
+        .methods.getStatus(0)
+        .call()
+      return poolStatus
     },
   },
   watch: {
