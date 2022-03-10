@@ -182,10 +182,6 @@ export default {
     },
     async getPoolInfo() {
       this.timing()
-      console.log(await this.getMineInstance())
-      console.log(await this.getMineInstance().methods)
-      console.log(await this.getMineInstance().methods.getPoolInfo())
-      console.log(await this.getMineInstance().methods.getPoolInfo().call())
       let poolInfo = await this.getMineInstance().methods.getPoolInfo().call()
 
       this.list1[0].uv = poolInfo[0]

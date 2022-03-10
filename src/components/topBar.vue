@@ -35,7 +35,7 @@
         <div
           type="text"
           class="fontsix"
-          @click="goHome(!odd1 ? 'newNode' : 'node')"
+          @click="goHome(!odd2 ? 'newNode' : 'node')"
           :class="
             ['node', 'newNode'].includes($route.name) ? 'ColoTexts' : 'texts'
           "
@@ -45,7 +45,7 @@
           <el-button
             plain
             class="buAbs"
-            @click.stop="goHome(odd1 ? 'node' : 'newNode')"
+            @click.stop="goHome(odd2 ? 'node' : 'newNode')"
           >
             {{ odd2 ? 'Node(old)' : 'Node(new)' }}
           </el-button>

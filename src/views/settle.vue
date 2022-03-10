@@ -3,7 +3,7 @@
     <TopBar @onneCli="getProinfo" @clearCl="clear" />
     <div class="settle">
       <div class="backCCC">
-        <div class="minCont marlrAuto padding-tb-xl" v-if="isSettlement">
+        <div class="minCont marlrAuto padding-tb-xl" v-if="!isSettlement">
           <h3 class="margin-bottom-xs">
             Please connect to the node address to view your node information. Do
             a good job in node reward settlement.
@@ -36,102 +36,151 @@
           </h3>
         </div>
       </div>
-      <div
-        class="minCont marlrAuto margin-top-xl fontSize-12"
-        v-if="isSettlement"
-      >
-        <p class="flexCont">
-          <span>Node Adress</span>
-          <span>0x36b37Ab158973C70A89c30fb4FfFF447717973C4</span>
-        </p>
-        <p class="flexCont addition">
-          <span>Staked</span>
-          <span> <span class="margin-right">200</span>TSINSO</span>
-        </p>
-        <p class="flexCont">
-          <span>Total Node Revenue</span>
-          <span> <span class="margin-right">200</span>TSINSO</span>
-        </p>
-        <p class="flexCont addition">
-          <span>Lock-up Rewards</span>
-          <span> <span class="margin-right">200</span>TSINSO</span>
-        </p>
-        <p class="flexCont">
-          <span>Cashable Rewards</span>
-          <span> <span class="margin-right">200</span>TSINSO</span>
-        </p>
-        <p class="flexCont addition">
-          <span>Cashed Rewards</span>
-          <span> <span class="margin-right">200</span>TSINSO</span>
-        </p>
-        <p class="flexCont">
-          <span>Total settlement</span>
-          <span> <span class="margin-right">200</span>TSINSO</span>
-        </p>
-        <div class="flex justify-end margin-tb-xl">
-          <el-button
-            class="buttWid"
-            v-if="isChoise == 1"
-            @click="openDialog"
-            type="primary"
-            round
-            >Settle accounts
-          </el-button>
-          <el-button
-            class="buttWid"
-            disabled
-            v-else-if="isChoise == 2"
-            type="info"
-            round
-            >Settled
-          </el-button>
-          <el-button class="buttWid" type="primary" round>Inquire</el-button>
+      <div v-if="textText">
+        <div
+          class="minCont marlrAuto margin-top-xl fontSize-12"
+          v-if="!isSettlement"
+        >
+          <p class="flexCont">
+            <span>Node Adress</span>
+            <span>{{ minerDetail.address || textText }}</span>
+          </p>
+          <p class="flexCont addition">
+            <span>Staked</span>
+            <span>
+              <span class="margin-right" v-if="!isTus">{{
+                minerDetail.address ? minerDetail.deposits : 'loading'
+              }}</span
+              >TSINSO</span
+            >
+          </p>
+          <p class="flexCont">
+            <span>Total Node Revenue</span>
+            <span>
+              <span class="margin-right" v-if="!isTus">
+                {{
+                  minerDetail.address ? minerDetail.totalAwards : 'loading'
+                }}</span
+              >TSINSO</span
+            >
+          </p>
+          <p class="flexCont addition">
+            <span>Lock-up Rewards</span>
+            <span>
+              <span class="margin-right" v-if="!isTus">
+                {{
+                  minerDetail.address ? minerDetail.lockedAwards : 'loading'
+                }}</span
+              >TSINSO</span
+            >
+          </p>
+          <p class="flexCont">
+            <span>Cashable Rewards</span>
+            <span>
+              <span class="margin-right" v-if="!isTus">
+                {{
+                  minerDetail.address ? minerDetail.cashableAwards : 'loading'
+                }}</span
+              >TSINSO</span
+            >
+          </p>
+          <p class="flexCont addition">
+            <span>Cashed Rewards</span>
+            <span>
+              <span class="margin-right" v-if="!isTus">
+                {{
+                  minerDetail.address ? minerDetail.withdrawnAwards : 'loading'
+                }}</span
+              >TSINSO</span
+            >
+          </p>
+          <p class="flexCont">
+            <span>Total settlement</span>
+            <span>
+              <span class="margin-right" v-if="!isTus">
+                {{
+                  minerDetail.address ? minerDetail.totalNums : 'loading'
+                }}</span
+              >TSINSO</span
+            >
+          </p>
+          <div class="flex justify-end margin-tb-xl">
+            <el-button
+              class="buttWid"
+              v-if="isChoise == 1"
+              @click="openDialog"
+              type="primary"
+              round
+              >Settle accounts
+            </el-button>
+            <el-button
+              class="buttWid"
+              disabled
+              v-else-if="isChoise == 2"
+              type="info"
+              round
+              >Settled
+            </el-button>
+            <el-button
+              v-if="minerDetail"
+              class="buttWid"
+              type="primary"
+              round
+              @click="isSettlement = true"
+              >Inquire</el-button
+            >
+          </div>
         </div>
-      </div>
-      <div class="minCont marlrAuto margin-top-xl fontSize-12" v-else>
-        <p class="flexCont">
-          <span>Node Adress</span>
-          <span>0x36b37Ab158973C70A89c30fb4FfFF447717973C4</span>
-        </p>
-        <p class="flexCont addition">
-          <span>Total settlement</span>
-          <span> <span class="margin-right">200</span>TSINSO</span>
-        </p>
-        <p class="flexCont margin-bottom">
-          <span>State</span>
-          <span :class="1 == 1 ? 'colorFail' : 'colBlue'">settled</span>
-        </p>
-        <p class="fontSize-14 margin-top margin-bottom-sm">
-          Please go to the new network to check the wallet balance
-        </p>
-        <p class="flexCont addition">
-          <span>Chain name</span>
-          <span> TestSsc</span>
-        </p>
-        <p class="flexCont">
-          <span>RPC URL</span>
-          <span></span>
-        </p>
-        <p class="flexCont addition">
-          <span>Chain ID</span>
-          <span> </span>
-        </p>
-        <p class="flexCont">
-          <span>Currency Symbol</span>
-          <span>SIN</span>
-        </p>
-        <p class="flexCont addition">
-          <span>Blockchain browser</span>
-          <span> </span>
-        </p>
-        <div class="flex justify-end margin-tb-xl">
-          <el-button
-            type="primary"
-            class="buttWid"
-            round
-            @click="$router.go(-1)"
-            >Return
-          </el-button>
+        <div class="minCont marlrAuto margin-top-xl fontSize-12" v-else>
+          <p class="flexCont">
+            <span>Node Adress</span>
+            <span>{{ minerDetail.address }}</span>
+          </p>
+          <p class="flexCont addition">
+            <span>Total settlement</span>
+            <span>
+              <span class="margin-right">{{ minerDetail.totalNums }}</span
+              >TSINSO</span
+            >
+          </p>
+          <p class="flexCont margin-bottom">
+            <span>State</span>
+            <span v-if="inSuccess == 1" class="colBlue">settled</span>
+            <span v-else-if="inSuccess == 0" class="colorFail">settled</span>
+            <span v-else class="colorFail">loading...</span>
+          </p>
+          <p class="fontSize-14 margin-top margin-bottom-sm">
+            Please go to the new network to check the wallet balance
+          </p>
+          <p class="flexCont addition">
+            <span>Chain name</span>
+            <span> TestSsc</span>
+          </p>
+          <p class="flexCont">
+            <span>RPC URL</span>
+            <span></span>
+          </p>
+          <p class="flexCont addition">
+            <span>Chain ID</span>
+            <span> </span>
+          </p>
+          <p class="flexCont">
+            <span>Currency Symbol</span>
+            <span>SIN</span>
+          </p>
+          <p class="flexCont addition">
+            <span>Blockchain browser</span>
+            <span> </span>
+          </p>
+          <div class="flex justify-end margin-tb-xl">
+            <el-button
+              type="primary"
+              class="buttWid"
+              round
+              @click="isSettlement = false"
+              >Return
+            </el-button>
+          </div>
         </div>
       </div>
     </div>
@@ -189,12 +238,14 @@ export default {
   data() {
     return {
       textText: '',
-      settleStatus: false, //弹框
-      inSuccess: 0, //1是成功 2加载中 0失败
-      isSettlement: true, // 是否是结算完成后的状态
-      isChoise: 0, // 0loading  1 Can settle   2 Settled
-      targetWeb3: '',
-      sourceWeb: '',
+      settleStatus: false, // el-dialog
+      inSuccess: 0, // 1 suress 2 loading...   0 error
+      isSettlement: false, // 是否是结算完成后的状态
+      isChoise: 0, // Query button  0 null  1 Can settle   2 Settled
+      isTus: false, // no data
+      targetWeb3: '', //{}
+      sourceWeb: '', //{}
+      minerDetail: '', //{}
       tableData: [
         {
           date: 'Chain name',
@@ -222,15 +273,22 @@ export default {
   components: { TopBar },
   methods: {
     async openDialog() {
-      await this.getOldInstance()
-        .methods.confirmProfits()
-        .call({ from: this.textText }, function (error, result) {
-          console.log(error, result)
-        })
+      let encodeAbi = this.getOldInstance().methods.confirmProfits().encodeABI()
+      const transactionParameters = {
+        to: process.env.VUE_APP_MINE_CONFIRMCONTRACT_ADDRESS,
+        from: this.textText,
+        data: encodeAbi,
+      }
+      let txHash = await window.ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [transactionParameters],
+      })
+      console.log(txHash)
       this.settleStatus = true
       this.inSuccess = 2
-      this.times = setInterval(() => {
-        this.fitsInfo = this.getNewInstance()
+      this.isChoise = 2
+      this.times = setInterval(async () => {
+        this.fitsInfo = await this.getNewInstance()
           .methods.profitInfo(this.textText)
           .call()
         if (this.fitsInfo.state == 3) {
@@ -240,7 +298,7 @@ export default {
           this.inSuccess = 0
           clearInterval(this.times)
         }
-        console.log(this.times)
+        console.log(this.fitsInfo)
       }, 3000)
     },
     getOldInstance() {
@@ -264,22 +322,54 @@ export default {
       return this.mineNewInstance
     },
     async getProinfo() {
+      this.clear()
       this.textText = await this.getAccount()
-      console.log(this.textText)
-      console.log(await this.getOldInstance())
-      console.log(await this.getOldInstance().methods)
       let proInfo = await this.getOldInstance()
         .methods.profitInfo(this.textText)
         .call()
       if (proInfo.state <= 1) {
         this.isChoise = 1
+        this.isTus = true
       } else if (proInfo.state == 3) {
         this.isChoise = 2
+        this.updateMinerInfo(this.textText, proInfo.profits)
+        this.inSuccess = 1
+      } else if ([2, 4].includes(proInfo.state)) {
+        this.isChoise = 0
+        this.isTus = true
       }
       console.log(proInfo)
     },
     clear() {
+      this.isTus = false
+      this.isChoise = 0
       this.textText = ''
+      this.minerDetail = ''
+      this.isSettlement = false
+    },
+    async updateMinerInfo(account, totalNums) {
+      let minerInfo = await this.getMineInstance()
+        .methods.getMinerInfo(account)
+        .call()
+      this.minerDetail = {
+        address: account,
+        deposits: minerInfo[2],
+        totalAwards: minerInfo[3],
+        withdrawnAwards: minerInfo[4],
+        lockedAwards: minerInfo[5],
+        cashableAwards: minerInfo[6],
+        totalNums: this.numberHandle(totalNums),
+      }
+    },
+    getMineInstance() {
+      if (!this.mineInstance) {
+        let web3 = this.targetWeb3
+        this.mineInstance = new web3.eth.Contract(
+          JSON.parse(process.env.VUE_APP_MINE_CONTNEWRACT_ABI),
+          process.env.VUE_APP_MINE_CONTNEWRACT_ADDRESS
+        )
+      }
+      return this.mineInstance
     },
     async getAccount() {
       let accountList = await window.ethereum.request({
@@ -291,7 +381,13 @@ export default {
   watch: {
     settleStatus(val) {
       if (!val) {
+        this.getProinfo()
         clearInterval(this.times)
+      }
+    },
+    textText(val) {
+      if (!val) {
+        this.isSettlement = false
       }
     },
   },
