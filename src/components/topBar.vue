@@ -128,10 +128,6 @@ export default {
   methods: {
     goHome(item) {
       let { name } = this.$route
-
-      // if (type != 1) {
-      //   this[type] = !this[type]
-      // }
       if (name != item) {
         this.$router.replace({ name: item })
       }
@@ -156,7 +152,7 @@ export default {
       }
     },
     addChain() {
-      let defaultChainJSON = JSON.parse(process.env.VUE_APP_DEFAULT_CHAIN)
+      let defaultChainJSON = JSON.parse(this.chain)
       window.ethereum
         .request({
           method: 'wallet_addEthereumChain',
@@ -181,17 +177,15 @@ export default {
         this.$message.error('Failed to add a default token to default network!')
       }
     },
-    switchChain() {
-      let defaultChainId = Web3.utils.numberToHex(
-        process.env.VUE_APP_DEFAULT_NEW_CHAIN_ID
-      )
+    switchChain(type) {
+      let defaultChainId = Web3.utils.numberToHex(this.chainId)
       window.ethereum
         .request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: defaultChainId }],
         })
         .then(() => {
-          this.$message.success('Connect MetaMask Success!')
+          !type && this.$message.success('Connect MetaMask Success!')
         })
         .catch((err) => {
           if (err.code === 4902) {
@@ -218,6 +212,23 @@ export default {
         that.textText = account
         that.$emit('onneCli')
       })
+    }
+    let { name } = this.$route
+    let {
+      VUE_APP_DEFAULT_CHAIN: child_old,
+      VUE_APP_DEFAULT_CHAIN_ID: child_old_Id,
+      VUE_APP_DEFAULT_NEW_CHAIN: child_new,
+      VUE_APP_DEFAULT_NEW_CHAIN_ID: child_new_Id,
+    } = process.env
+    if (['node', 'settle'].includes(name)) {
+      this.chain = child_old
+      this.chainId = child_old_Id
+    } else {
+      this.chain = child_new
+      this.chainId = child_new_Id
+    }
+    if (this.textText && ['node', 'settle', 'newNode'].includes(name)) {
+      this.switchChain('data')
     }
     setTimeout(() => {
       this.odd1 = this.$store.state.odd1 || false
