@@ -304,7 +304,7 @@ export default {
       this.inSuccess = 2
       this.isChoise = 2
       this.times = setInterval(async () => {
-        this.fitsInfo = await this.getNewInstance()
+        this.fitsInfo = await this.getOldInstance()
           .methods.profitInfo(this.textText)
           .call()
         if (this.fitsInfo.state == 3) {
