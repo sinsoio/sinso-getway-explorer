@@ -339,6 +339,7 @@ export default {
     async getProinfo() {
       this.clear()
       this.textText = await this.getAccount()
+      // this.textText = '0xdecb709c528014ec657fbe2f1d81cd364a158f69'
       let proInfo = await this.getOldInstance()
         .methods.profitInfo(this.textText)
         .call()
@@ -375,11 +376,11 @@ export default {
       )
       this.minerDetail = {
         address: account,
-        deposits: minerInfo[2],
-        totalAwards: minerInfo[3],
-        withdrawnAwards: minerInfo[4],
-        lockedAwards: minerInfo[5],
-        cashableAwards: minerInfo[6],
+        deposits: this.numberHandle(minerInfo[2]),
+        totalAwards: this.numberHandle(minerInfo[3]),
+        withdrawnAwards: this.numberHandle(minerInfo[4]),
+        lockedAwards: this.numberHandle(minerInfo[5]),
+        cashableAwards: this.numberHandle(minerInfo[6]),
         totalNums,
       }
     },
@@ -387,8 +388,8 @@ export default {
       if (!this.mineInstance) {
         let web3 = this.targetWeb3
         this.mineInstance = new web3.eth.Contract(
-          JSON.parse(process.env.VUE_APP_NEW_MINE_CONTRACT_ABI),
-          process.env.VUE_APP_NEW_MINE_CONTRACT_ADDRESS
+          JSON.parse(process.env.VUE_APP_OLD_MINE_CONTRACT_ABI),
+          process.env.VUE_APP_OLD_MINE_CONTRACT_ADDRESS
         )
       }
       return this.mineInstance
@@ -436,7 +437,7 @@ export default {
     this.sourceWeb3 = sourceWeb3
 
     let targetWeb3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.VUE_APP_TARGET_CHAIN_URL)
+      new Web3.providers.HttpProvider(process.env.VUE_APP_RAW_URL)
     )
     this.targetWeb3 = targetWeb3
   },
