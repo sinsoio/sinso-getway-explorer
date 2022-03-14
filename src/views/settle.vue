@@ -339,7 +339,6 @@ export default {
     async getProinfo() {
       this.clear()
       this.textText = await this.getAccount()
-      // this.textText = '0xdecb709c528014ec657fbe2f1d81cd364a158f69'
       let proInfo = await this.getOldInstance()
         .methods.profitInfo(this.textText)
         .call()
@@ -350,11 +349,10 @@ export default {
       } else {
         if (proInfo.state <= 1) {
           this.isChoise = 1
-        } else if (proInfo.state == 3) {
+        } else if (['3', '4'].includes(proInfo.state)) {
           this.isChoise = 2
-
           this.inSuccess = 1
-        } else if ([2, 4].includes(proInfo.state)) {
+        } else if (proInfo.state == 2) {
           this.isChoise = 0
         }
       }
